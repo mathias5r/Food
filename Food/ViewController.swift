@@ -9,6 +9,8 @@ import UIKit
 import MapKit
 
 class ViewController: UIViewController {
+    
+    var locationManager: CLLocationManager?
 
     // lazy is being used here to initialize mapView only once
     lazy var mapView: MKMapView = {
@@ -32,12 +34,23 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // initialize search input
+        searchTextField.delegate = self
+        
+        // initialize location manager
+        locationManager = CLLocationManager()
+        locationManager?.delegate = self
+        locationManager?.requestWhenInUseAuthorization()
+        locationManager?.requestLocation()
+        
         setupUI();
     }
     
     private func setupUI() {
         view.addSubview(mapView)
         
+        // TODO: how to set the center of the map in the top area of the phone
         mapView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         mapView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         mapView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -51,5 +64,75 @@ class ViewController: UIViewController {
         searchTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
         searchTextField.returnKeyType = .go
     }
+    
+    private func checkLocationPermission() {
+        guard let locationManager = locationManager,
+              let location = locationManager.location else { return }
+        
+        switch locationManager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            // How to center my location in the upper area of the phone?
+            let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude - 0.002, longitude: location.coordinate.longitude)
+            let region = MKCoordinateRegion(center: coords, latitudinalMeters: 1000, longitudinalMeters: 1000)
+            mapView.setRegion(region, animated: true)
+        case .denied:
+            print("location access denied")
+        case .notDetermined, .restricted:
+            print("location is not determined")
+        default:
+            print("status not recognized")
+        }
+    }
+    
+    private func searchFood(_ searchString: String) {
+        let searchRequest = MKLocalSearch.Request()
+        searchRequest.naturalLanguageQuery = searchString
+        searchRequest.region = mapView.region
+        
+        let search = MKLocalSearch(request: searchRequest)
+        search.start { response, error in
+            guard let response = response else {
+                print("Error: \(error?.localizedDescription ?? "Unknown error").")
+                return
+            }
+
+            self.setAnnotations(response.mapItems)
+        }
+    }
+    
+    private func setAnnotations(_ items: [MKMapItem]) {
+        for item in items {
+            let coordinate = item.placemark.coordinate
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            annotation.title = item.name
+            self.mapView.addAnnotation(annotation)
+        }
+    }
 }
 
+// The extention permits to isolate the logic of an specific delegate interface
+extension ViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        checkLocationPermission()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        print(error)
+    }
+}
+
+extension ViewController: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if let searchText = searchTextField.text {
+            searchFood(searchText)
+        }
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        searchTextField.resignFirstResponder()
+        return true
+    }
+}
