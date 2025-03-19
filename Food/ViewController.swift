@@ -11,7 +11,9 @@ import MapKit
 class ViewController: UIViewController {
     
     var locationManager: CLLocationManager?
-
+    
+    var locations: [MKMapItem] = []
+    
     // lazy is being used here to initialize mapView only once
     lazy var mapView: MKMapView = {
         let map = MKMapView()
@@ -32,6 +34,13 @@ class ViewController: UIViewController {
         return searchTextField
     }()
     
+    lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.layer.cornerRadius = 16
+        return tableView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -43,6 +52,10 @@ class ViewController: UIViewController {
         locationManager?.delegate = self
         locationManager?.requestWhenInUseAuthorization()
         locationManager?.requestLocation()
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "locationCell")
         
         setupUI();
     }
@@ -63,6 +76,12 @@ class ViewController: UIViewController {
         searchTextField.widthAnchor.constraint(equalToConstant: view.bounds.size.width/1.2).isActive = true
         searchTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
         searchTextField.returnKeyType = .go
+        
+        view.addSubview(tableView)
+        
+        tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
+        tableView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
     
     private func checkLocationPermission() {
@@ -97,6 +116,8 @@ class ViewController: UIViewController {
             }
 
             self.setAnnotations(response.mapItems)
+            self.locations = response.mapItems
+            self.tableView.reloadData()
         }
     }
     
@@ -134,5 +155,31 @@ extension ViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.resignFirstResponder()
         return true
+    }
+}
+
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return locations.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
+        
+        guard let cell = tableCell else { return UITableViewCell() }
+        
+        var content = cell.defaultContentConfiguration()
+        content.text = locations[indexPath.row].name
+        content.secondaryText = locations[indexPath.row].placemark.title
+        cell.contentConfiguration = content
+
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let location = locations[indexPath.row]
+        let locationCoordinates = location.placemark.coordinate
+        let coords = CLLocationCoordinate2D(latitude:locationCoordinates.latitude - 0.002, longitude: locationCoordinates.longitude)
+        mapView.setCenter(coords, animated: true)
     }
 }
