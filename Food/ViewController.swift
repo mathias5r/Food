@@ -82,6 +82,7 @@ class ViewController: UIViewController {
         tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
         tableView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        setEmptyTableView()
     }
     
     private func checkLocationPermission() {
@@ -103,10 +104,22 @@ class ViewController: UIViewController {
         }
     }
     
+    private func setEmptyTableView() {
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
+        messageLabel.text = "No Locations.\n Please, use the search input above!"
+        messageLabel.textColor = .black
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+        messageLabel.sizeToFit()
+        
+        tableView.backgroundView = messageLabel
+    }
+    
     private func searchFood(_ searchString: String) {
         let searchRequest = MKLocalSearch.Request()
         searchRequest.naturalLanguageQuery = searchString
         searchRequest.region = mapView.region
+        searchRequest.pointOfInterestFilter = .init(including: [.foodMarket, .restaurant])
         
         let search = MKLocalSearch(request: searchRequest)
         search.start { response, error in
@@ -114,10 +127,16 @@ class ViewController: UIViewController {
                 print("Error: \(error?.localizedDescription ?? "Unknown error").")
                 return
             }
+            
+            if(response.mapItems.count > 0) {
+                self.setAnnotations(response.mapItems)
+                self.locations = response.mapItems
+                self.tableView.backgroundView = nil
+                self.tableView.reloadData()
+            } else {
+                self.setEmptyTableView()
+            }
 
-            self.setAnnotations(response.mapItems)
-            self.locations = response.mapItems
-            self.tableView.reloadData()
         }
     }
     
