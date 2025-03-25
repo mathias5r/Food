@@ -14,6 +14,9 @@ class ViewController: UIViewController {
     
     var locations: [MKMapItem] = []
     
+    var safeAreaInsets: UIEdgeInsets?
+    
+    
     // lazy is being used here to initialize mapView only once
     lazy var mapView: MKMapView = {
         let map = MKMapView()
@@ -56,18 +59,21 @@ class ViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "locationCell")
-        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        safeAreaInsets = view.safeAreaInsets
         setupUI();
     }
     
     private func setupUI() {
         view.addSubview(mapView)
         
-        // TODO: how to set the center of the map in the top area of the phone
         mapView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        mapView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        mapView.heightAnchor.constraint(equalToConstant: view.bounds.size.height/2).isActive = true
         mapView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        mapView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         
         view.addSubview(searchTextField)
         
@@ -78,9 +84,9 @@ class ViewController: UIViewController {
         searchTextField.returnKeyType = .go
         
         view.addSubview(tableView)
-        
+
         tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
-        tableView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2).isActive = true
+        tableView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2 + view.safeAreaInsets.top).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         setEmptyTableView()
     }
@@ -92,7 +98,7 @@ class ViewController: UIViewController {
         switch locationManager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse:
             // How to center my location in the upper area of the phone?
-            let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude - 0.002, longitude: location.coordinate.longitude)
+            let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
             let region = MKCoordinateRegion(center: coords, latitudinalMeters: 1000, longitudinalMeters: 1000)
             mapView.setRegion(region, animated: true)
         case .denied:
@@ -198,7 +204,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let location = locations[indexPath.row]
         let locationCoordinates = location.placemark.coordinate
-        let coords = CLLocationCoordinate2D(latitude:locationCoordinates.latitude - 0.002, longitude: locationCoordinates.longitude)
+        let coords = CLLocationCoordinate2D(latitude:locationCoordinates.latitude, longitude: locationCoordinates.longitude)
         mapView.setCenter(coords, animated: true)
     }
 }
