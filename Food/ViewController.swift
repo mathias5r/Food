@@ -7,6 +7,9 @@
 
 import UIKit
 import MapKit
+import Combine
+
+// TODO: apply MVVM to this controller
 
 class ViewController: UIViewController {
     
@@ -16,6 +19,9 @@ class ViewController: UIViewController {
     
     var safeAreaInsets: UIEdgeInsets?
     
+    var isLoading: Bool = false
+    
+    var cancellables = Set<AnyCancellable>()
     
     // lazy is being used here to initialize mapView only once
     lazy var mapView: MKMapView = {
@@ -24,6 +30,7 @@ class ViewController: UIViewController {
         map.translatesAutoresizingMaskIntoConstraints = false
         return map
     }()
+    
     
     lazy var searchTextField: UITextField = {
         let searchTextField = UITextField()
@@ -34,6 +41,7 @@ class ViewController: UIViewController {
         searchTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         searchTextField.leftViewMode = .always
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
+        
         return searchTextField
     }()
     
@@ -42,6 +50,13 @@ class ViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.layer.cornerRadius = 16
         return tableView
+    }()
+    
+    lazy var loading: UIActivityIndicatorView = {
+        let loading = UIActivityIndicatorView(style: .large)
+        loading.translatesAutoresizingMaskIntoConstraints = false
+        loading.hidesWhenStopped = true
+        return loading
     }()
     
     override func viewDidLoad() {
@@ -59,6 +74,18 @@ class ViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "locationCell")
+        
+        searchTextField.textPublisher
+          .receive(on: RunLoop.main)
+          .sink(receiveValue: { value in
+              if let search = value {
+                  if !search.isEmpty {
+                      self.loading.startAnimating()
+                      self.searchFood(value ?? "")
+                  }
+              }
+          })
+          .store(in: &cancellables)
     }
     
     override func viewDidLayoutSubviews() {
@@ -89,6 +116,11 @@ class ViewController: UIViewController {
         tableView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2 + view.safeAreaInsets.top).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         setEmptyTableView()
+        
+        view.addSubview(loading)
+        
+        loading.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
+        loading.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
     }
     
     private func checkLocationPermission() {
@@ -139,10 +171,10 @@ class ViewController: UIViewController {
                 self.locations = response.mapItems
                 self.tableView.backgroundView = nil
                 self.tableView.reloadData()
+                self.loading.stopAnimating()
             } else {
                 self.setEmptyTableView()
             }
-
         }
     }
     
@@ -172,17 +204,13 @@ extension ViewController: CLLocationManagerDelegate {
 }
 
 extension ViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if let searchText = searchTextField.text {
-            searchFood(searchText)
-        }
-    }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.resignFirstResponder()
         return true
     }
 }
 
+// TODO: separte delegate and source
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return locations.count
