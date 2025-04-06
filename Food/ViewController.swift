@@ -15,13 +15,13 @@ class ViewController: UIViewController {
     
     var locationManager: CLLocationManager?
     
-    var locations: [MKMapItem] = []
-    
     var safeAreaInsets: UIEdgeInsets?
     
     var isLoading: Bool = false
     
     var cancellables = Set<AnyCancellable>()
+    
+    var viewModel: ViewModel = ViewModel()
     
     // lazy is being used here to initialize mapView only once
     lazy var mapView: MKMapView = {
@@ -168,7 +168,7 @@ class ViewController: UIViewController {
             
             if(response.mapItems.count > 0) {
                 self.setAnnotations(response.mapItems)
-                self.locations = response.mapItems
+                self.viewModel.setLocations(response.mapItems)
                 self.tableView.backgroundView = nil
                 self.tableView.reloadData()
                 self.loading.stopAnimating()
@@ -213,7 +213,7 @@ extension ViewController: UITextFieldDelegate {
 // TODO: separte delegate and source
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return locations.count
+        return viewModel.locations.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -222,17 +222,15 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableCell else { return UITableViewCell() }
         
         var content = cell.defaultContentConfiguration()
-        content.text = locations[indexPath.row].name
-        content.secondaryText = locations[indexPath.row].placemark.title
+        content.text = viewModel.locations[indexPath.row].name
+        content.secondaryText = viewModel.locations[indexPath.row].placemark.title
         cell.contentConfiguration = content
 
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let location = locations[indexPath.row]
-        let locationCoordinates = location.placemark.coordinate
-        let coords = CLLocationCoordinate2D(latitude:locationCoordinates.latitude, longitude: locationCoordinates.longitude)
+        let coords = viewModel.getCoordsFromLocation(at: indexPath.row)
         mapView.setCenter(coords, animated: true)
     }
 }
