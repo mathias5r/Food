@@ -12,9 +12,6 @@ import Combine
 // TODO: apply MVVM to this controller
 
 class ViewController: UIViewController {
-    
-    var locationManager: CLLocationManager?
-    
     var safeAreaInsets: UIEdgeInsets?
     
     var isLoading: Bool = false
@@ -68,12 +65,6 @@ class ViewController: UIViewController {
         // initialize search input
         searchTextField.delegate = self
         
-        // initialize location manager
-        locationManager = CLLocationManager()
-        locationManager?.delegate = self
-        locationManager?.requestWhenInUseAuthorization()
-        locationManager?.requestLocation()
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "locationCell")
@@ -126,24 +117,6 @@ class ViewController: UIViewController {
         loading.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
     }
     
-    private func checkLocationPermission() {
-        guard let locationManager = locationManager,
-              let location = locationManager.location else { return }
-        
-        switch locationManager.authorizationStatus {
-        case .authorizedAlways, .authorizedWhenInUse:
-            let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-            let region = MKCoordinateRegion(center: coords, latitudinalMeters: 1000, longitudinalMeters: 1000)
-            mapView.setRegion(region, animated: true)
-        case .denied:
-            print("location access denied")
-        case .notDetermined, .restricted:
-            print("location is not determined")
-        default:
-            print("status not recognized")
-        }
-    }
-    
     private func setEmptyTableView() {
         let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
         messageLabel.text = "No Locations.\n Please, use the search input above!"
@@ -166,20 +139,6 @@ class ViewController: UIViewController {
     }
 }
 
-// The extention permits to isolate the logic of an specific delegate interface
-extension ViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    }
-    
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        checkLocationPermission()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-        print(error)
-    }
-}
-
 extension ViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.resignFirstResponder()
@@ -194,14 +153,11 @@ extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
-        
         guard let cell = tableCell else { return UITableViewCell() }
-        
         var content = cell.defaultContentConfiguration()
         content.text = viewModel.locations[indexPath.row].name
         content.secondaryText = viewModel.locations[indexPath.row].placemark.title
         cell.contentConfiguration = content
-
         return cell
     }
     
@@ -214,9 +170,28 @@ extension ViewController: UITableViewDelegate {
 extension ViewController: UITableViewDataSource {}
 
 extension ViewController: ViewModalDelegate {
+    func didUpdateLocation(_ location: CLLocation) {
+        let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+        let region = MKCoordinateRegion(center: coords, latitudinalMeters: 1000, longitudinalMeters: 1000)
+        mapView.setRegion(region, animated: true)
+    }
+    
+    func didChangeAuthorization(_ status: CLAuthorizationStatus) {
+        switch status {
+            case .authorizedAlways, .authorizedWhenInUse:
+                print("location authorized")
+            case .denied:
+                print("location access denied")
+            case .notDetermined, .restricted:
+                print("location is not determined")
+            default:
+                print("status not recognized")
+            }
+        }
+    
     func didSearchComplete(results: [MKMapItem]) {
         if(results.count > 0) {
-            self.setAnnotations(results)
+            setAnnotations(results)
             self.tableView.backgroundView = nil
             self.tableView.reloadData()
             self.loading.stopAnimating()
@@ -225,3 +200,4 @@ extension ViewController: ViewModalDelegate {
         }
     }
 }
+
