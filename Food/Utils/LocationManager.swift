@@ -13,7 +13,13 @@ protocol LocationManagerDelegate: AnyObject {
     func didChangeAuthorization(_ status: CLAuthorizationStatus)
 }
 
-class LocationManager: NSObject, CLLocationManagerDelegate {
+protocol LocationManagerProtocol: AnyObject {
+    var delegate: LocationManagerDelegate? { get set }
+    func requestPermission()
+    func requestLocation()
+}
+
+class LocationManager: NSObject, CLLocationManagerDelegate, LocationManagerProtocol {
     static let shared = LocationManager()
     
     private let manager = CLLocationManager()

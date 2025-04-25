@@ -9,8 +9,6 @@ import UIKit
 import MapKit
 import Combine
 
-// TODO: apply MVVM to this controller
-
 class ViewController: UIViewController {
     var safeAreaInsets: UIEdgeInsets?
     
@@ -18,7 +16,16 @@ class ViewController: UIViewController {
     
     var cancellables = Set<AnyCancellable>()
     
-    var viewModel: ViewModel = ViewModel()
+    var viewModel: ViewModelProtocol!
+    
+    required init(viewModel: ViewModelProtocol) {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel = viewModel
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // lazy is being used here to initialize mapView only once
     lazy var mapView: MKMapView = {
