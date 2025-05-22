@@ -14,7 +14,7 @@ protocol ViewModalDelegate: AnyObject {
     func didChangeAuthorization(_ status: CLAuthorizationStatus)
 }
 
-protocol ViewModelProtocol: ViewModalDelegate {
+protocol ViewModelProtocol: AnyObject {
     var locations: [MKMapItem] { get }
     var delegate: ViewModalDelegate? { get set }
     func searchFood(_ searchString: String, _ region: MKCoordinateRegion) -> Void
