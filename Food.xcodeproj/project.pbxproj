@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A7750B302D83B4CC00561745 /* Exceptions for "Food" folder in "Food" target */ = {
+		A7876A132DBBE71C0029D579 /* Exceptions for "Food" folder in "Food" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -24,7 +24,7 @@
 		A7750B202D83B4CB00561745 /* Food */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A7750B302D83B4CC00561745 /* Exceptions for "Food" folder in "Food" target */,
+				A7876A132DBBE71C0029D579 /* Exceptions for "Food" folder in "Food" target */,
 			);
 			path = Food;
 			sourceTree = "<group>";

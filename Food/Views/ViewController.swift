@@ -9,19 +9,23 @@ import UIKit
 import MapKit
 import Combine
 
-// TODO: apply MVVM to this controller
-
 class ViewController: UIViewController {
-    
-    var locationManager: CLLocationManager?
-    
-    var locations: [MKMapItem] = []
-    
     var safeAreaInsets: UIEdgeInsets?
     
     var isLoading: Bool = false
     
     var cancellables = Set<AnyCancellable>()
+    
+    var viewModel: ViewModelProtocol!
+    
+    required init(viewModel: ViewModelProtocol) {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel = viewModel
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // lazy is being used here to initialize mapView only once
     lazy var mapView: MKMapView = {
@@ -62,14 +66,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // initialize view model
+        viewModel.delegate = self
+        
         // initialize search input
         searchTextField.delegate = self
-        
-        // initialize location manager
-        locationManager = CLLocationManager()
-        locationManager?.delegate = self
-        locationManager?.requestWhenInUseAuthorization()
-        locationManager?.requestLocation()
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -81,7 +82,7 @@ class ViewController: UIViewController {
               if let search = value {
                   if !search.isEmpty {
                       self.loading.startAnimating()
-                      self.searchFood(value ?? "")
+                      self.viewModel.searchFood(value ?? "", self.mapView.region)
                   }
               }
           })
@@ -123,25 +124,6 @@ class ViewController: UIViewController {
         loading.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
     }
     
-    private func checkLocationPermission() {
-        guard let locationManager = locationManager,
-              let location = locationManager.location else { return }
-        
-        switch locationManager.authorizationStatus {
-        case .authorizedAlways, .authorizedWhenInUse:
-            // How to center my location in the upper area of the phone?
-            let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-            let region = MKCoordinateRegion(center: coords, latitudinalMeters: 1000, longitudinalMeters: 1000)
-            mapView.setRegion(region, animated: true)
-        case .denied:
-            print("location access denied")
-        case .notDetermined, .restricted:
-            print("location is not determined")
-        default:
-            print("status not recognized")
-        }
-    }
-    
     private func setEmptyTableView() {
         let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
         messageLabel.text = "No Locations.\n Please, use the search input above!"
@@ -151,31 +133,6 @@ class ViewController: UIViewController {
         messageLabel.sizeToFit()
         
         tableView.backgroundView = messageLabel
-    }
-    
-    private func searchFood(_ searchString: String) {
-        let searchRequest = MKLocalSearch.Request()
-        searchRequest.naturalLanguageQuery = searchString
-        searchRequest.region = mapView.region
-        searchRequest.pointOfInterestFilter = .init(including: [.foodMarket, .restaurant])
-        
-        let search = MKLocalSearch(request: searchRequest)
-        search.start { response, error in
-            guard let response = response else {
-                print("Error: \(error?.localizedDescription ?? "Unknown error").")
-                return
-            }
-            
-            if(response.mapItems.count > 0) {
-                self.setAnnotations(response.mapItems)
-                self.locations = response.mapItems
-                self.tableView.backgroundView = nil
-                self.tableView.reloadData()
-                self.loading.stopAnimating()
-            } else {
-                self.setEmptyTableView()
-            }
-        }
     }
     
     private func setAnnotations(_ items: [MKMapItem]) {
@@ -189,20 +146,6 @@ class ViewController: UIViewController {
     }
 }
 
-// The extention permits to isolate the logic of an specific delegate interface
-extension ViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    }
-    
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        checkLocationPermission()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-        print(error)
-    }
-}
-
 extension ViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.resignFirstResponder()
@@ -210,29 +153,58 @@ extension ViewController: UITextFieldDelegate {
     }
 }
 
-// TODO: separte delegate and source
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return locations.count
+        return viewModel.locations.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
-        
         guard let cell = tableCell else { return UITableViewCell() }
-        
         var content = cell.defaultContentConfiguration()
-        content.text = locations[indexPath.row].name
-        content.secondaryText = locations[indexPath.row].placemark.title
+        content.text = viewModel.locations[indexPath.row].name
+        content.secondaryText = viewModel.locations[indexPath.row].placemark.title
         cell.contentConfiguration = content
-
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let location = locations[indexPath.row]
-        let locationCoordinates = location.placemark.coordinate
-        let coords = CLLocationCoordinate2D(latitude:locationCoordinates.latitude, longitude: locationCoordinates.longitude)
+        let coords = viewModel.getCoordsFromLocation(at: indexPath.row)
         mapView.setCenter(coords, animated: true)
     }
 }
+
+extension ViewController: UITableViewDataSource {}
+
+extension ViewController: ViewModalDelegate {
+    func didUpdateLocation(_ location: CLLocation) {
+        let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+        let region = MKCoordinateRegion(center: coords, latitudinalMeters: 1000, longitudinalMeters: 1000)
+        mapView.setRegion(region, animated: true)
+    }
+    
+    func didChangeAuthorization(_ status: CLAuthorizationStatus) {
+        switch status {
+            case .authorizedAlways, .authorizedWhenInUse:
+                print("location authorized")
+            case .denied:
+                print("location access denied")
+            case .notDetermined, .restricted:
+                print("location is not determined")
+            default:
+                print("status not recognized")
+            }
+        }
+    
+    func didSearchComplete(results: [MKMapItem]) {
+        if(results.count > 0) {
+            setAnnotations(results)
+            self.tableView.backgroundView = nil
+            self.tableView.reloadData()
+            self.loading.stopAnimating()
+        } else {
+            self.setEmptyTableView()
+        }
+    }
+}
+
