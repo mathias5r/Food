@@ -9,16 +9,16 @@ import Foundation
 import MapKit
 
 protocol ViewModalDelegate: AnyObject {
-    func didSearchComplete(results: [MKMapItem])
+    func didSearchComplete(results: [RestaurantModel])
     func didUpdateLocation(_ location: CLLocation)
     func didChangeAuthorization(_ status: CLAuthorizationStatus)
 }
 
 protocol ViewModelProtocol: AnyObject {
-    var locations: [MKMapItem] { get }
+    var restaurants: [RestaurantModel] { get }
     var delegate: ViewModalDelegate? { get set }
     func searchFood(_ searchString: String, _ region: MKCoordinateRegion) -> Void
-    func setLocations(_ locations: [MKMapItem]) -> Void
+    func setRestaurants(_ locations: [RestaurantModel]) -> Void
     func getCoordsFromLocation(at index: Int) -> CLLocationCoordinate2D
 }
 
@@ -36,16 +36,16 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
         self.locationManager.requestLocation()
     }
     
-    private(set) var locations: [MKMapItem] = []
+    private(set) var restaurants: [RestaurantModel] = []
     
-    public func setLocations(_ locations: [MKMapItem]) {
-        self.locations = locations
+    public func setRestaurants(_ restaurants: [RestaurantModel]) {
+        self.restaurants = restaurants
     }
     
     public func getCoordsFromLocation(at index: Int) -> CLLocationCoordinate2D {
-        let location = locations[index]
-        let locationCoordinates = location.placemark.coordinate
-        return CLLocationCoordinate2D(latitude:locationCoordinates.latitude, longitude: locationCoordinates.longitude)
+        let restaurant = restaurants[index]
+        let coords = restaurant.location
+        return CLLocationCoordinate2D(latitude: coords.lat, longitude: coords.long)
     }
     
     public func searchFood(_ searchString: String, _ region: MKCoordinateRegion) {
@@ -66,9 +66,10 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
                 return
             }
             
-            self.setLocations(response.mapItems)
-            self.didSearchComplete(results: response.mapItems)
+            let restaurants = response.mapItems.map(_transform)
             
+            self.setRestaurants(restaurants)
+            self.didSearchComplete(results: restaurants)
         }
     }
     
@@ -80,7 +81,36 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
         delegate?.didChangeAuthorization(status)
     }
     
-    func didSearchComplete(results: [MKMapItem]) {
+    func didSearchComplete(results: [RestaurantModel]) {
         delegate?.didSearchComplete(results: results)
+    }
+    
+    private func _transform(mapItem: MKMapItem) -> RestaurantModel {
+        let name = mapItem.name ?? "Unknown Name"
+        
+        let location = LocationModel(lat: mapItem.placemark.coordinate.latitude, long: mapItem.placemark.coordinate.longitude)
+        
+        let address = _formatAddress(from: mapItem.placemark)
+        
+        return RestaurantModel(name: name, location: location, address: address)
+    }
+
+    private func _formatAddress(from placemark: MKPlacemark) -> AddressModel {
+        let parts = [
+            placemark.subThoroughfare,
+            placemark.thoroughfare,
+            placemark.locality,
+            placemark.administrativeArea,
+            placemark.postalCode,
+            placemark.country
+        ]
+        
+        return AddressModel(
+            country: placemark.country ?? "Unknown Country",
+            street: placemark.thoroughfare ?? "Unknown Street",
+            city: placemark.locality ?? "Unknown City",
+            state: placemark.administrativeArea ?? "Unknown State",
+            zipCode: placemark.postalCode ?? "Unknown Zip Code"
+        )
     }
 }

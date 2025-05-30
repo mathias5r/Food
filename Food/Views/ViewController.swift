@@ -135,11 +135,10 @@ class ViewController: UIViewController {
         tableView.backgroundView = messageLabel
     }
     
-    private func setAnnotations(_ items: [MKMapItem]) {
+    private func setAnnotations(_ items: [RestaurantModel]) {
         for item in items {
-            let coordinate = item.placemark.coordinate
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
+            let coordinate = item.location;            let annotation = MKPointAnnotation()
+            annotation.coordinate = CLLocationCoordinate2D(latitude: coordinate.lat, longitude: coordinate.long)
             annotation.title = item.name
             self.mapView.addAnnotation(annotation)
         }
@@ -155,15 +154,17 @@ extension ViewController: UITextFieldDelegate {
 
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.locations.count
+        return viewModel.restaurants.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
         guard let cell = tableCell else { return UITableViewCell() }
         var content = cell.defaultContentConfiguration()
-        content.text = viewModel.locations[indexPath.row].name
-        content.secondaryText = viewModel.locations[indexPath.row].placemark.title
+        content.text = viewModel.restaurants[indexPath.row].name
+        let address = viewModel.restaurants[indexPath.row].address
+        let seecondaryText = "\(address.street), \(address.city), \(address.state), \(address.zipCode)"
+        content.secondaryText = seecondaryText
         cell.contentConfiguration = content
         return cell
     }
@@ -196,7 +197,7 @@ extension ViewController: ViewModalDelegate {
             }
         }
     
-    func didSearchComplete(results: [MKMapItem]) {
+    func didSearchComplete(results: [RestaurantModel]) {
         if(results.count > 0) {
             setAnnotations(results)
             self.tableView.backgroundView = nil
