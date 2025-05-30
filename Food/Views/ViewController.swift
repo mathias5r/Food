@@ -78,6 +78,7 @@ class ViewController: UIViewController {
         
         searchTextField.textPublisher
           .receive(on: RunLoop.main)
+          .debounce(for: 0.5, scheduler: DispatchQueue.main)
           .sink(receiveValue: { value in
               if let search = value {
                   if !search.isEmpty {
