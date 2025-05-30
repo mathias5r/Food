@@ -7,6 +7,7 @@
 
 import Foundation
 import MapKit
+import Alamofire
 
 protocol ViewModalDelegate: AnyObject {
     func didSearchComplete(results: [RestaurantModel])
@@ -49,6 +50,10 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
     }
     
     public func searchFood(_ searchString: String, _ region: MKCoordinateRegion) {
+        AF.request("http://localhost:3000/api/restaurants").response { response in
+            debugPrint(response)
+        }
+        
         let searchRequest = MKLocalSearch.Request()
         searchRequest.naturalLanguageQuery = searchString
         searchRequest.region = region
