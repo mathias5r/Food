@@ -30,6 +30,7 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
     
     private let locationManager: LocationManagerProtocol
     private let httpClient: HttpClientProtocol
+    private var userLocation: CLLocation?
     
     init(locationManager: LocationManagerProtocol, httpClient: HttpClientProtocol) {
         self.httpClient = httpClient
@@ -54,30 +55,41 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
     
     public func searchFood(_ searchString: String, _ region: MKCoordinateRegion) {
         struct Params: Encodable {
-            let empty: Bool
+            let search: String;
+            let lat: Double;
+            let long: Double
+            let range: Int
         }
-        httpClient.get(path: "http://localhost:3000/api/restaurants", params: Params(empty: true), completion: {
-            result in switch result {
-            case .success(let data):
-                if let data = data {
-                    do {
-                        let restaurants = try JSONDecoder().decode([RestaurantModel].self, from: data)
-                        self.setRestaurants(restaurants)
-                        self.didSearchComplete(results: restaurants)
-                    } catch {
-                        print("JSON decoding error: \(error)")
+        if let location = userLocation {
+            let lat = location.coordinate.latitude
+            let long = location.coordinate.longitude
+            let range = 10000
+            httpClient.get(path: "/restaurants", params: Params(search: searchString, lat: lat, long: long, range: range), completion: {
+                result in switch result {
+                    case .success(let data):
+                        if let data = data {
+                            do {
+                                let restaurants = try JSONDecoder().decode([RestaurantModel].self, from: data)
+                                self.setRestaurants(restaurants)
+                                self.didSearchComplete(results: restaurants)
+                            } catch {
+                                self.setRestaurants([])
+                                self.didSearchComplete(results: [], error: error)
+                            }
+                        } else {
+                            self.setRestaurants([])
+                            self.didSearchComplete(results: [])
+                        }
+                    case .failure(let error):
+                        self.setRestaurants([])
+                        self.didSearchComplete(results: [], error: error)
                     }
-                } else {
-                    self.setRestaurants([])
-                    self.didSearchComplete(results: [])
-                }
-            case .failure(let error):
-                self.didSearchComplete(results: [], error: error)
-            }
-        })
+            })
+        }
     }
     
     func didUpdateLocation(_ location: CLLocation) {
+        self.userLocation = location
         delegate?.didUpdateLocation(location)
     }
     

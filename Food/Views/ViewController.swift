@@ -75,6 +75,7 @@ class ViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "locationCell")
+        self.setEmptyTableView()
         
         searchTextField.textPublisher
           .receive(on: RunLoop.main)
@@ -117,7 +118,6 @@ class ViewController: UIViewController {
         tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
         tableView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2 + view.safeAreaInsets.top).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        setEmptyTableView()
         
         view.addSubview(loading)
         
@@ -148,6 +148,7 @@ class ViewController: UIViewController {
     }
     
     private func setAnnotations(_ items: [RestaurantModel]) {
+        self.mapView.removeAnnotations(self.mapView.annotations)
         for item in items {
             let coordinate = item.location;            let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: coordinate.lat, longitude: coordinate.long)
@@ -192,7 +193,7 @@ extension ViewController: UITableViewDataSource {}
 extension ViewController: ViewModalDelegate {
     func didUpdateLocation(_ location: CLLocation) {
         let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-        let region = MKCoordinateRegion(center: coords, latitudinalMeters: 1000, longitudinalMeters: 1000)
+        let region = MKCoordinateRegion(center: coords, latitudinalMeters: 10000, longitudinalMeters: 10000)
         mapView.setRegion(region, animated: true)
     }
     
@@ -211,18 +212,19 @@ extension ViewController: ViewModalDelegate {
     
     func didSearchComplete(results: [RestaurantModel], error: Error?) {
         if(error != nil) {
+            self.loading.stopAnimating()
             self.setErrorTableView()
             return
         }
         
+        self.tableView.backgroundView = nil
+        self.loading.stopAnimating()
         if(results.count > 0) {
             setAnnotations(results)
-            self.tableView.backgroundView = nil
-            self.tableView.reloadData()
-            self.loading.stopAnimating()
         } else {
             self.setEmptyTableView()
         }
+        self.tableView.reloadData()
     }
 }
 

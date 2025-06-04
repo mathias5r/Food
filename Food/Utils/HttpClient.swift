@@ -16,10 +16,10 @@ final class HttpClient: HttpClientProtocol {
     static let shared = HttpClient()
     private init() {}
 
-    private let baseURL = "http://localhost:3000/api/restaurants"
+    private let baseURL = "http://localhost:3000/api"
 
     func get(path: String, params: Encodable, completion: @escaping (Result<Data?, AFError>) -> Void) -> Void {
-        AF.request(path, method: .get, parameters: params).response { response in
+        AF.request(baseURL + path, method: .get, parameters: params).response { response in
             completion(response.result)
         }
     }
