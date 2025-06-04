@@ -136,6 +136,17 @@ class ViewController: UIViewController {
         tableView.backgroundView = messageLabel
     }
     
+    private func setErrorTableView() {
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
+        messageLabel.text = "Could not get restaurants.\n Please, try again later!"
+        messageLabel.textColor = .red
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+        messageLabel.sizeToFit()
+        
+        tableView.backgroundView = messageLabel
+    }
+    
     private func setAnnotations(_ items: [RestaurantModel]) {
         for item in items {
             let coordinate = item.location;            let annotation = MKPointAnnotation()
@@ -198,7 +209,12 @@ extension ViewController: ViewModalDelegate {
             }
         }
     
-    func didSearchComplete(results: [RestaurantModel]) {
+    func didSearchComplete(results: [RestaurantModel], error: Error?) {
+        if(error != nil) {
+            self.setErrorTableView()
+            return
+        }
+        
         if(results.count > 0) {
             setAnnotations(results)
             self.tableView.backgroundView = nil
