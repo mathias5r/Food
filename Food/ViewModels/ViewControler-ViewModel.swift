@@ -7,18 +7,19 @@
 
 import Foundation
 import MapKit
+import Alamofire
 
 protocol ViewModalDelegate: AnyObject {
-    func didSearchComplete(results: [MKMapItem])
+    func didSearchComplete(results: [RestaurantModel], error: Error?)
     func didUpdateLocation(_ location: CLLocation)
     func didChangeAuthorization(_ status: CLAuthorizationStatus)
 }
 
 protocol ViewModelProtocol: AnyObject {
-    var locations: [MKMapItem] { get }
+    var restaurants: [RestaurantModel] { get }
     var delegate: ViewModalDelegate? { get set }
     func searchFood(_ searchString: String, _ region: MKCoordinateRegion) -> Void
-    func setLocations(_ locations: [MKMapItem]) -> Void
+    func setRestaurants(_ locations: [RestaurantModel]) -> Void
     func getCoordsFromLocation(at index: Int) -> CLLocationCoordinate2D
 }
 
@@ -28,51 +29,67 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
     weak var delegate: ViewModalDelegate?
     
     private let locationManager: LocationManagerProtocol
+    private let httpClient: HttpClientProtocol
+    private var userLocation: CLLocation?
     
-    init(locationManager: LocationManagerProtocol) {
+    init(locationManager: LocationManagerProtocol, httpClient: HttpClientProtocol) {
+        self.httpClient = httpClient
+        
         self.locationManager = locationManager
         self.locationManager.delegate = self
         self.locationManager.requestPermission()
         self.locationManager.requestLocation()
     }
     
-    private(set) var locations: [MKMapItem] = []
+    private(set) var restaurants: [RestaurantModel] = []
     
-    public func setLocations(_ locations: [MKMapItem]) {
-        self.locations = locations
+    public func setRestaurants(_ restaurants: [RestaurantModel]) {
+        self.restaurants = restaurants
     }
     
     public func getCoordsFromLocation(at index: Int) -> CLLocationCoordinate2D {
-        let location = locations[index]
-        let locationCoordinates = location.placemark.coordinate
-        return CLLocationCoordinate2D(latitude:locationCoordinates.latitude, longitude: locationCoordinates.longitude)
+        let restaurant = restaurants[index]
+        let coords = restaurant.location
+        return CLLocationCoordinate2D(latitude: coords.lat, longitude: coords.long)
     }
     
     public func searchFood(_ searchString: String, _ region: MKCoordinateRegion) {
-        let searchRequest = MKLocalSearch.Request()
-        searchRequest.naturalLanguageQuery = searchString
-        searchRequest.region = region
-        searchRequest.pointOfInterestFilter = .init(including: [.foodMarket, .restaurant])
-        
-        let search = MKLocalSearch(request: searchRequest)
-        // weak self allow a weak refence between the closure of search.start and "self" itself
-        search.start { [weak self] response, error in
-            guard let response = response else {
-                print("Error: \(error?.localizedDescription ?? "Unknown error").")
-                return
-            }
-            
-            guard let self = self else {
-                return
-            }
-            
-            self.setLocations(response.mapItems)
-            self.didSearchComplete(results: response.mapItems)
-            
+        struct Params: Encodable {
+            let search: String;
+            let lat: Double;
+            let long: Double
+            let range: Int
+        }
+        if let location = userLocation {
+            let lat = location.coordinate.latitude
+            let long = location.coordinate.longitude
+            let range = 10000
+            httpClient.get(path: "/restaurants", params: Params(search: searchString, lat: lat, long: long, range: range), completion: {
+                result in switch result {
+                    case .success(let data):
+                        if let data = data {
+                            do {
+                                let restaurants = try JSONDecoder().decode([RestaurantModel].self, from: data)
+                                self.setRestaurants(restaurants)
+                                self.didSearchComplete(results: restaurants)
+                            } catch {
+                                self.setRestaurants([])
+                                self.didSearchComplete(results: [], error: error)
+                            }
+                        } else {
+                            self.setRestaurants([])
+                            self.didSearchComplete(results: [])
+                        }
+                    case .failure(let error):
+                        self.setRestaurants([])
+                        self.didSearchComplete(results: [], error: error)
+                    }
+            })
         }
     }
     
     func didUpdateLocation(_ location: CLLocation) {
+        self.userLocation = location
         delegate?.didUpdateLocation(location)
     }
     
@@ -80,7 +97,7 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
         delegate?.didChangeAuthorization(status)
     }
     
-    func didSearchComplete(results: [MKMapItem]) {
-        delegate?.didSearchComplete(results: results)
+    func didSearchComplete(results: [RestaurantModel], error: Error? = nil) {
+        delegate?.didSearchComplete(results: results, error: error)
     }
 }

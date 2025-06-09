@@ -75,9 +75,11 @@ class ViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "locationCell")
+        self.setEmptyTableView()
         
         searchTextField.textPublisher
           .receive(on: RunLoop.main)
+          .debounce(for: 0.5, scheduler: DispatchQueue.main)
           .sink(receiveValue: { value in
               if let search = value {
                   if !search.isEmpty {
@@ -116,7 +118,6 @@ class ViewController: UIViewController {
         tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
         tableView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2 + view.safeAreaInsets.top).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        setEmptyTableView()
         
         view.addSubview(loading)
         
@@ -135,11 +136,22 @@ class ViewController: UIViewController {
         tableView.backgroundView = messageLabel
     }
     
-    private func setAnnotations(_ items: [MKMapItem]) {
+    private func setErrorTableView() {
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
+        messageLabel.text = "Could not get restaurants.\n Please, try again later!"
+        messageLabel.textColor = .red
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+        messageLabel.sizeToFit()
+        
+        tableView.backgroundView = messageLabel
+    }
+    
+    private func setAnnotations(_ items: [RestaurantModel]) {
+        self.mapView.removeAnnotations(self.mapView.annotations)
         for item in items {
-            let coordinate = item.placemark.coordinate
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
+            let coordinate = item.location;            let annotation = MKPointAnnotation()
+            annotation.coordinate = CLLocationCoordinate2D(latitude: coordinate.lat, longitude: coordinate.long)
             annotation.title = item.name
             self.mapView.addAnnotation(annotation)
         }
@@ -155,15 +167,17 @@ extension ViewController: UITextFieldDelegate {
 
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.locations.count
+        return viewModel.restaurants.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
         guard let cell = tableCell else { return UITableViewCell() }
         var content = cell.defaultContentConfiguration()
-        content.text = viewModel.locations[indexPath.row].name
-        content.secondaryText = viewModel.locations[indexPath.row].placemark.title
+        content.text = viewModel.restaurants[indexPath.row].name
+        let address = viewModel.restaurants[indexPath.row].address
+        let seecondaryText = "\(address.street), \(address.city), \(address.state), \(address.zipCode)"
+        content.secondaryText = seecondaryText
         cell.contentConfiguration = content
         return cell
     }
@@ -179,7 +193,7 @@ extension ViewController: UITableViewDataSource {}
 extension ViewController: ViewModalDelegate {
     func didUpdateLocation(_ location: CLLocation) {
         let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-        let region = MKCoordinateRegion(center: coords, latitudinalMeters: 1000, longitudinalMeters: 1000)
+        let region = MKCoordinateRegion(center: coords, latitudinalMeters: 10000, longitudinalMeters: 10000)
         mapView.setRegion(region, animated: true)
     }
     
@@ -196,15 +210,21 @@ extension ViewController: ViewModalDelegate {
             }
         }
     
-    func didSearchComplete(results: [MKMapItem]) {
+    func didSearchComplete(results: [RestaurantModel], error: Error?) {
+        if(error != nil) {
+            self.loading.stopAnimating()
+            self.setErrorTableView()
+            return
+        }
+        
+        self.tableView.backgroundView = nil
+        self.loading.stopAnimating()
         if(results.count > 0) {
             setAnnotations(results)
-            self.tableView.backgroundView = nil
-            self.tableView.reloadData()
-            self.loading.stopAnimating()
         } else {
             self.setEmptyTableView()
         }
+        self.tableView.reloadData()
     }
 }
 
