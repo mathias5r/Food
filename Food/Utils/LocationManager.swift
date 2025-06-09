@@ -36,7 +36,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate, LocationManagerProto
     }
 
     func requestLocation() {
-        manager.requestLocation()
+        manager.startUpdatingLocation()
     }
 
     // CLLocationManagerDelegate methods
