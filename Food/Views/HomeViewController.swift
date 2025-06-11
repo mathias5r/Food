@@ -9,7 +9,7 @@ import UIKit
 import MapKit
 import Combine
 
-class ViewController: UIViewController {
+class HomeViewController: UIViewController {
     var safeAreaInsets: UIEdgeInsets?
     
     var isLoading: Bool = false
@@ -158,14 +158,14 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UITextFieldDelegate {
+extension HomeViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.resignFirstResponder()
         return true
     }
 }
 
-extension ViewController: UITableViewDelegate {
+extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.restaurants.count
     }
@@ -183,14 +183,16 @@ extension ViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let coords = viewModel.getCoordsFromLocation(at: indexPath.row)
-        mapView.setCenter(coords, animated: true)
+        let selectedRestaurant = viewModel.restaurants[indexPath.row]
+        let detailsViewControler = DetailsViewController()
+        detailsViewControler.restaurant = selectedRestaurant
+        present(detailsViewControler, animated: true)
     }
 }
 
-extension ViewController: UITableViewDataSource {}
+extension HomeViewController: UITableViewDataSource {}
 
-extension ViewController: ViewModalDelegate {
+extension HomeViewController: ViewModalDelegate {
     func didUpdateLocation(_ location: CLLocation) {
         let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
         let region = MKCoordinateRegion(center: coords, latitudinalMeters: 10000, longitudinalMeters: 10000)

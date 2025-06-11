@@ -11,4 +11,8 @@ struct RestaurantModel: Decodable {
     let name: String
     let location: LocationModel
     let address: AddressModel
+    let image: String
+    let phone: String
+    let rating: Double
+    let cuisine: String
 }

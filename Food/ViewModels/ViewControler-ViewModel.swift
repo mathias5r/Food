@@ -70,6 +70,7 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
                         if let data = data {
                             do {
                                 let restaurants = try JSONDecoder().decode([RestaurantModel].self, from: data)
+                                print(restaurants)
                                 self.setRestaurants(restaurants)
                                 self.didSearchComplete(results: restaurants)
                             } catch {
