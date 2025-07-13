@@ -8,6 +8,7 @@
 import UIKit
 import MapKit
 import Combine
+import SwiftUI
 
 class HomeViewController: UIViewController {
     var safeAreaInsets: UIEdgeInsets?
@@ -176,7 +177,7 @@ extension HomeViewController: UITableViewDelegate {
         var content = cell.defaultContentConfiguration()
         content.text = viewModel.restaurants[indexPath.row].name
         let address = viewModel.restaurants[indexPath.row].address
-        let seecondaryText = "\(address.street), \(address.city), \(address.state), \(address.zipCode)"
+        let seecondaryText = address.toString()
         content.secondaryText = seecondaryText
         cell.contentConfiguration = content
         return cell
@@ -184,8 +185,9 @@ extension HomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedRestaurant = viewModel.restaurants[indexPath.row]
-        let detailsViewControler = DetailsViewController()
-        detailsViewControler.restaurant = selectedRestaurant
+//      let detailsViewControler = DetailsFactory.viewController(restaurant: selectedRestaurant)
+        print(selectedRestaurant)
+        let detailsViewControler = DetailsFactory.viewUIController(restaurant: selectedRestaurant)
         present(detailsViewControler, animated: true)
     }
 }

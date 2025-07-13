@@ -10,8 +10,20 @@
 		A740F8932DEA689B00B7534D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A740F8922DEA689B00B7534D /* Alamofire */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A79F416B2E02068100B82F81 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7750B162D83B4CB00561745 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A7750B1D2D83B4CB00561745;
+			remoteInfo = Food;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		A7750B1E2D83B4CB00561745 /* Food.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Food.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A79F41672E02068100B82F81 /* FoodTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A79F41702E020BC000B82F81 /* Food.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Food.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -33,6 +45,11 @@
 			path = Food;
 			sourceTree = "<group>";
 		};
+		A79F41682E02068100B82F81 /* FoodTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = FoodTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,13 +61,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A79F41642E02068100B82F81 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		A7750B152D83B4CB00561745 = {
 			isa = PBXGroup;
 			children = (
+				A79F41702E020BC000B82F81 /* Food.xctestplan */,
 				A7750B202D83B4CB00561745 /* Food */,
+				A79F41682E02068100B82F81 /* FoodTests */,
 				A7750B1F2D83B4CB00561745 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				A7750B1E2D83B4CB00561745 /* Food.app */,
+				A79F41672E02068100B82F81 /* FoodTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -89,6 +116,29 @@
 			productReference = A7750B1E2D83B4CB00561745 /* Food.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A79F41662E02068100B82F81 /* FoodTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A79F416F2E02068100B82F81 /* Build configuration list for PBXNativeTarget "FoodTests" */;
+			buildPhases = (
+				A79F41632E02068100B82F81 /* Sources */,
+				A79F41642E02068100B82F81 /* Frameworks */,
+				A79F41652E02068100B82F81 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A79F416C2E02068100B82F81 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A79F41682E02068100B82F81 /* FoodTests */,
+			);
+			name = FoodTests;
+			packageProductDependencies = (
+			);
+			productName = FoodTests;
+			productReference = A79F41672E02068100B82F81 /* FoodTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -101,6 +151,10 @@
 				TargetAttributes = {
 					A7750B1D2D83B4CB00561745 = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					A79F41662E02068100B82F81 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = A7750B1D2D83B4CB00561745;
 					};
 				};
 			};
@@ -122,12 +176,20 @@
 			projectRoot = "";
 			targets = (
 				A7750B1D2D83B4CB00561745 /* Food */,
+				A79F41662E02068100B82F81 /* FoodTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A7750B1C2D83B4CB00561745 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A79F41652E02068100B82F81 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -144,7 +206,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A79F41632E02068100B82F81 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A79F416C2E02068100B82F81 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A7750B1D2D83B4CB00561745 /* Food */;
+			targetProxy = A79F416B2E02068100B82F81 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A7750B322D83B4CC00561745 /* Debug */ = {
@@ -322,6 +399,42 @@
 			};
 			name = Release;
 		};
+		A79F416D2E02068100B82F81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DS2K2Q4DUH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mathias.FoodTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Food.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Food";
+			};
+			name = Debug;
+		};
+		A79F416E2E02068100B82F81 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DS2K2Q4DUH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mathias.FoodTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Food.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Food";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -339,6 +452,15 @@
 			buildConfigurations = (
 				A7750B322D83B4CC00561745 /* Debug */,
 				A7750B332D83B4CC00561745 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A79F416F2E02068100B82F81 /* Build configuration list for PBXNativeTarget "FoodTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A79F416D2E02068100B82F81 /* Debug */,
+				A79F416E2E02068100B82F81 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -14,6 +14,11 @@ struct LocationModel: Decodable {
     private enum CodingKeys: String, CodingKey {
         case coordinates
     }
+    
+    init(lat: Double, long: Double) {
+        self.lat = lat
+        self.long = long
+    }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
