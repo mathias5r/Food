@@ -17,53 +17,107 @@ struct DetailsViewControllerSwiftUI: View {
             GeometryReader { geometry in
                 VStack(alignment: .leading) {
                     ZStack(alignment: .top) {
-                        AsyncImage(url: URL(string: item.image)) { phase in
-                            switch phase {
-                            case .failure:
-                                Image(systemName: "photo").font(.largeTitle)
-                            case .success(let image):
-                                image.resizable()
-                            default:
-                                ProgressView()
-                            }
-                        }
-                        .scaledToFill()
-                        .frame(width: geometry.size.width, height: geometry.size.height * 0.3)
-                        .clipped()
-                        Button(action: {
-                            dismiss()
-                        }) {
-                            Image(systemName: "xmark")
-                        }.tint(.white).frame(minWidth: geometry.size.width - 32, maxHeight: geometry.safeAreaInsets.top + 64, alignment: .trailing)
+                        image(restaurant: item, geometry)
+                        closeButton(geometry)
                     }
                     VStack(alignment: .leading) {
                         HStack {
                             VStack(alignment: .leading) {
-                                Text(item.name).font(.system(size: 24, weight: .bold)).foregroundStyle(.black).padding([.top, .leading], 16)
-                                Text(item.address.toString()).font(.system(size: 18, weight: .regular)).foregroundStyle(.black).padding(.leading, 16)
+                                name(restaurant: item)
+                                address(restaurant: item)
                             }
-                            Text(item.cuisine).font(.system(size: 16, weight: .semibold)).foregroundStyle(.black).padding(.leading, 16).padding(.trailing, 16).frame(maxWidth: 100, alignment: .trailing)
+                            cuisine(restaurant: item)
                         }
                         SeparatorView()
                         HStack {
-                            Text("Rating:").font(.system(size: 16, weight: .regular)).padding(.leading, 16).padding(.top, 4)
+                            ratingLabel
                             StarRatingView(rating: 4).padding(.top, 4)
                         }
                         HStack {
-                            let phone = Phone.format(item.phone)
-                            Text("Phone: \(phone))").font(.system(size: 16, weight: .regular)).padding(.leading, 16).padding(.top, 4)
+                            phone(restaurant: item)
                             Spacer()
-                            Button(action: {
-                                Phone.openDialler(phone)
-                            }) {
-                                Image(systemName: "phone.fill")
-                            }.padding(.trailing, 16)
+                            diallerButton(restaurant: item)
                         }
                         
                     }
                 }.ignoresSafeArea()
             }
         }
+    }
+    
+    
+    // make those functions private
+    func image(restaurant: RestaurantModel, _ geometry: GeometryProxy) -> some View {
+        AsyncImage(url: URL(string: restaurant.image)) { phase in
+            switch phase {
+            case .failure:
+                Image(systemName: "photo").font(.largeTitle)
+            case .success(let image):
+                image.resizable()
+            default:
+                ProgressView()
+            }
+        }
+        .scaledToFill()
+        .frame(width: geometry.size.width, height: geometry.size.height * 0.3)
+        .clipped()
+    }
+    
+    func closeButton(_ geometry: GeometryProxy) -> some View {
+        Button(action: {
+            dismiss()
+        }) {
+            Image(systemName: "xmark")
+        }
+        .tint(.white)
+        .frame(minWidth: geometry.size.width - 32, maxHeight: geometry.safeAreaInsets.top + 64, alignment: .trailing)
+    }
+    
+    func name(restaurant: RestaurantModel) -> some View {
+        Text(restaurant.name)
+            .font(.system(size: 24, weight: .bold))
+            .foregroundStyle(.black)
+            .padding([.top, .leading], 16)
+    }
+    
+    func address(restaurant: RestaurantModel) -> some View {
+        Text(restaurant.address.toString())
+            .font(.system(size: 18, weight: .regular))
+            .foregroundStyle(.black)
+            .padding(.leading, 16)
+    }
+    
+    func cuisine(restaurant: RestaurantModel) -> some View {
+        Text(restaurant.cuisine)
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundStyle(.black).padding(.leading, 16)
+            .padding(.trailing, 16)
+            .frame(maxWidth: 100, alignment: .trailing)
+    }
+    
+    var ratingLabel: some View {
+        Text("Rating:")
+            .font(.system(size: 16, weight: .regular))
+            .padding(.leading, 16)
+            .padding(.top, 4)
+    }
+    
+    func phone(restaurant: RestaurantModel) -> some View {
+        let phone = Phone.format(restaurant.phone)
+        return Text("Phone: \(phone))")
+            .font(.system(size: 16, weight: .regular))
+            .padding(.leading, 16)
+            .padding(.top, 4)
+    }
+    
+    func diallerButton(restaurant: RestaurantModel) -> some View {
+        let phone = Phone.format(restaurant.phone)
+        return Button(action: {
+            Phone.openDialler(phone)
+        }) {
+            Image(systemName: "phone.fill")
+        }
+        .padding(.trailing, 16)
     }
 }
 
