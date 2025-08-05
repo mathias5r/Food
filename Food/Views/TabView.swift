@@ -12,7 +12,6 @@ struct HomeViewControllerWrapper: UIViewControllerRepresentable {
         return HomeFactory.viewController() as! HomeViewController
     }
     func updateUIViewController(_ uiViewController: HomeViewController, context: Context) {
-        // Handle updates from SwiftUI to UIKit if needed
     }
 }
 
