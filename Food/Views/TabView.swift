@@ -22,7 +22,7 @@ struct TabsView: View {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
-            Text("Profile Tab")
+            ProfileFactory.view()
                 .tabItem {
                     Label("Profile", systemImage: "person.circle")
                 }
