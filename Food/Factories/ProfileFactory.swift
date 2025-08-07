@@ -11,7 +11,9 @@ import SwiftUI
 
 class ProfileFactory {
     @ViewBuilder static func view() ->  some View {
-        ProfileView()
+        let userRepository = UserRepository()
+        let viewModel = ProfileViewModel(userRepository: userRepository)
+        ProfileView(viewModel: viewModel)
     }
 }
 

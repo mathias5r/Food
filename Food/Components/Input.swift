@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Input: View {
-    @State var text: String
+    @Binding public var text: String
     var placeholder: String
     var label: String
     
@@ -31,7 +31,7 @@ struct Input_Preview: PreviewProvider {
     
     static var previews: some View {
         VStack {
-            Input(text: text, placeholder: "Placeholder", label: "Label")
+            Input(text: $text, placeholder: "Placeholder", label: "Label")
         }.padding(0).border(.black)
     }
 }

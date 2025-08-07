@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A70E76992E44DEA6008B37E5 /* User+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70E76972E44DEA6008B37E5 /* User+CoreDataClass.swift */; };
+		A70E769A2E44DEA6008B37E5 /* User+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70E76982E44DEA6008B37E5 /* User+CoreDataProperties.swift */; };
 		A740F8932DEA689B00B7534D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A740F8922DEA689B00B7534D /* Alamofire */; };
 /* End PBXBuildFile section */
 
@@ -21,6 +23,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A70E76972E44DEA6008B37E5 /* User+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "User+CoreDataClass.swift"; path = "Food/CoreData/User+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A70E76982E44DEA6008B37E5 /* User+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "User+CoreDataProperties.swift"; path = "Food/CoreData/User+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A7750B1E2D83B4CB00561745 /* Food.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Food.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A79F41672E02068100B82F81 /* FoodTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A79F41702E020BC000B82F81 /* Food.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Food.xctestplan; sourceTree = "<group>"; };
@@ -74,6 +78,8 @@
 		A7750B152D83B4CB00561745 = {
 			isa = PBXGroup;
 			children = (
+				A70E76972E44DEA6008B37E5 /* User+CoreDataClass.swift */,
+				A70E76982E44DEA6008B37E5 /* User+CoreDataProperties.swift */,
 				A79F41702E020BC000B82F81 /* Food.xctestplan */,
 				A7750B202D83B4CB00561745 /* Food */,
 				A79F41682E02068100B82F81 /* FoodTests */,
@@ -203,6 +209,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A70E76992E44DEA6008B37E5 /* User+CoreDataClass.swift in Sources */,
+				A70E769A2E44DEA6008B37E5 /* User+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
