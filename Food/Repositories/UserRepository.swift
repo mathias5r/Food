@@ -109,6 +109,7 @@ class UserRepository {
                          user.email = userEmail
                      }
                      try context.save()
+                     completion(true)
                  } else {
                      completion(false)
                  }

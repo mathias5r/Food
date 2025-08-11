@@ -25,6 +25,13 @@ class ProfileViewModel: ProfileViewModelProtocol {
             return
         }
         
+        if (repository.get() != nil) {
+            repository.update(name: profile.name, lastname: profile.lastname, email: profile.email) { completed in
+                print("User updated: \(completed)")
+            }
+            return
+        }
+        
         repository.create(name: profile.name, lastname: profile.lastname, email: profile.email) { completed in
             print("User created: \(completed)")
         }

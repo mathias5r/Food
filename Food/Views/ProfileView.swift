@@ -19,7 +19,7 @@ struct ProfileView: View {
             VStack(alignment: .leading) {
                 Input(text: $name, placeholder: "Name", label: "Name")
                 Input(text: $lastname, placeholder: "Lastname", label: "Lastname")
-                Input(text: $email, placeholder: "Email", label: "Email")
+                Input(text: $email, placeholder: "Email", label: "Email").textInputAutocapitalization(.never)
                 Spacer()
                 PrimaryButton(title: "Save", action: {
                     let profile = ProfileModel(name: name, lastname: lastname, email: email)
@@ -35,8 +35,10 @@ struct ProfileView: View {
     }
 }
 
-//struct ProfileView_Preview: PreviewProvider {
-//    static var previews: some View {
-//        ProfileView()
-//    }
-//}
+struct ProfileView_Preview: PreviewProvider {
+    static var previews: some View {
+        let userRepository = UserRepository()
+        let viewModel = ProfileViewModel(userRepository: userRepository)
+        ProfileView(viewModel: viewModel)
+    }
+}
