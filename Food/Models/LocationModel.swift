@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LocationModel: Decodable {
+struct LocationModel: Codable {
     let lat: Double
     let long: Double
     
@@ -32,5 +32,10 @@ struct LocationModel: Decodable {
 
         self.long = coordinates[0]
         self.lat = coordinates[1]
+    }
+    
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        return try container.encode([self.lat, self.long], forKey: .coordinates)
     }
 }

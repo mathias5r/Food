@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RestaurantModel: Decodable {
+struct RestaurantModel: Codable {
     let name: String
     let location: LocationModel
     let address: AddressModel

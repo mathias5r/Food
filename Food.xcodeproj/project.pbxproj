@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		A70E76992E44DEA6008B37E5 /* User+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70E76972E44DEA6008B37E5 /* User+CoreDataClass.swift */; };
 		A70E769A2E44DEA6008B37E5 /* User+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70E76982E44DEA6008B37E5 /* User+CoreDataProperties.swift */; };
+		A70E79432E4A9364008B37E5 /* Recents+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70E79422E4A9364008B37E5 /* Recents+CoreDataProperties.swift */; };
+		A70E79442E4A9364008B37E5 /* Recents+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A70E79412E4A9364008B37E5 /* Recents+CoreDataClass.swift */; };
 		A740F8932DEA689B00B7534D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A740F8922DEA689B00B7534D /* Alamofire */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		A70E76972E44DEA6008B37E5 /* User+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "User+CoreDataClass.swift"; path = "Food/CoreData/User+CoreDataClass.swift"; sourceTree = "<group>"; };
 		A70E76982E44DEA6008B37E5 /* User+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "User+CoreDataProperties.swift"; path = "Food/CoreData/User+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A70E79412E4A9364008B37E5 /* Recents+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Recents+CoreDataClass.swift"; path = "Food/CoreData/Recents+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A70E79422E4A9364008B37E5 /* Recents+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Recents+CoreDataProperties.swift"; path = "Food/CoreData/Recents+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A7750B1E2D83B4CB00561745 /* Food.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Food.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A79F41672E02068100B82F81 /* FoodTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A79F41702E020BC000B82F81 /* Food.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Food.xctestplan; sourceTree = "<group>"; };
@@ -78,6 +82,8 @@
 		A7750B152D83B4CB00561745 = {
 			isa = PBXGroup;
 			children = (
+				A70E79412E4A9364008B37E5 /* Recents+CoreDataClass.swift */,
+				A70E79422E4A9364008B37E5 /* Recents+CoreDataProperties.swift */,
 				A70E76972E44DEA6008B37E5 /* User+CoreDataClass.swift */,
 				A70E76982E44DEA6008B37E5 /* User+CoreDataProperties.swift */,
 				A79F41702E020BC000B82F81 /* Food.xctestplan */,
@@ -209,6 +215,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A70E79432E4A9364008B37E5 /* Recents+CoreDataProperties.swift in Sources */,
+				A70E79442E4A9364008B37E5 /* Recents+CoreDataClass.swift in Sources */,
 				A70E76992E44DEA6008B37E5 /* User+CoreDataClass.swift in Sources */,
 				A70E769A2E44DEA6008B37E5 /* User+CoreDataProperties.swift in Sources */,
 			);

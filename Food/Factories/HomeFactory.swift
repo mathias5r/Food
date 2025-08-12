@@ -15,7 +15,8 @@ class HomeFactory: HomeFactoryProtocol {
     static func viewController() -> UIViewController {
         let locationManager = LocationManager.shared
         let httpClient = HttpClient.shared
-        let viewModel = ViewModel(locationManager: locationManager, httpClient: httpClient)
+        let recentsRepository = RecentRepository()
+        let viewModel = HomeViewModel(locationManager: locationManager, httpClient: httpClient, recentRepository: recentsRepository)
         let viewController = HomeViewController(viewModel: viewModel)
         return viewController;
     }
