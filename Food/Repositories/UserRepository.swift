@@ -9,13 +9,22 @@ import Foundation
 import CoreData
 import UIKit
 
-class UserRepository {
+protocol UserRepositoryProtocol {
+    func get() -> User?
+    func create(name: String, lastname: String, email: String, completion: @escaping (Bool) -> Void)
+    func delete(completion: @escaping (Bool) -> Void)
+    func update(name: String?, lastname: String?, email: String?, completion: @escaping (Bool) -> Void)
+}
+
+class UserRepository: UserRepositoryProtocol {
+    
+    let context: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.context = context
+    }
     
     func get() -> User? {
-        guard let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
-            return nil
-        }
-        
         let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
         
         do {
@@ -36,11 +45,6 @@ class UserRepository {
     
     
     func create(name: String, lastname: String, email: String, completion: @escaping (Bool) -> Void) {
-        guard let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
-            completion(false)
-            return
-        }
-        
         do {
              let user = User(context: context)
              user.name = name
@@ -59,11 +63,6 @@ class UserRepository {
     }
     
     func delete(completion: @escaping (Bool) -> Void) {
-        guard let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
-            completion(false)
-            return
-        }
-        
         let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
         
         do {
@@ -86,12 +85,7 @@ class UserRepository {
         }
     }
     
-    func update(name: String?, lastname: String?, email: String?, completion: @escaping (Bool) -> Void) {
-        guard let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
-            completion(false)
-            return
-        }
-        
+    func update(name: String?, lastname: String?, email: String?, completion: @escaping (Bool) -> Void) {        
         let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
         
         do {

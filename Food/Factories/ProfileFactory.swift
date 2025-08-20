@@ -10,10 +10,13 @@ import SwiftUI
 
 
 class ProfileFactory {
-    @ViewBuilder static func view() ->  some View {
-        let userRepository = UserRepository()
+    static func view() ->  some View {
+        guard let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
+            fatalError()
+        }
+        let userRepository = UserRepository(context: context)
         let viewModel = ProfileViewModel(userRepository: userRepository)
-        ProfileView(viewModel: viewModel)
+        return ProfileView(viewModel: viewModel)
     }
 }
 

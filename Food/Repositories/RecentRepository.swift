@@ -10,11 +10,14 @@ import CoreData
 import UIKit
 
 class RecentRepository {
+    
+    let context: NSManagedObjectContext
+    
+    init(context: NSManagedObjectContext) {
+        self.context = context
+    }
+    
     func get() -> [String] {
-        guard let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
-            return []
-        }
-        
         let fetchRequest: NSFetchRequest<Recents> = Recents.fetchRequest()
         
         do {
@@ -34,10 +37,6 @@ class RecentRepository {
     }
     
     func create(items: [String]) {
-        guard let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
-            return
-        }
-        
         let fetchRequest: NSFetchRequest<Recents> = Recents.fetchRequest()
         
         do {

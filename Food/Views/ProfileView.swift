@@ -35,9 +35,23 @@ struct ProfileView: View {
     }
 }
 
+private class EmptyUserRepository: UserRepositoryProtocol {
+    func get() -> User? {
+        return nil
+    }
+    
+    func create(name: String, lastname: String, email: String, completion: @escaping (Bool) -> Void) {}
+    
+    func delete(completion: @escaping (Bool) -> Void) {}
+    
+    func update(name: String?, lastname: String?, email: String?, completion: @escaping (Bool) -> Void) {}
+    
+    
+}
+
 struct ProfileView_Preview: PreviewProvider {
     static var previews: some View {
-        let userRepository = UserRepository()
+        let userRepository = EmptyUserRepository()
         let viewModel = ProfileViewModel(userRepository: userRepository)
         ProfileView(viewModel: viewModel)
     }
