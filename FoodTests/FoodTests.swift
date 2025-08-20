@@ -35,7 +35,7 @@ struct FoodTests {
     @Test func example() async throws {
         let mockedLocationManager = MockedLocationManager()
         let mockedHttpClient = MockedHttpClient()
-        let viewModel = ViewModel(locationManager: mockedLocationManager, httpClient: mockedHttpClient)
+        let viewModel = HomeViewModel(locationManager: mockedLocationManager, httpClient: mockedHttpClient)
         let location: LocationModel = LocationModel(lat: 0, long: 0);
         let address: AddressModel = AddressModel(country: "test", street: "test", city: "test", state: "test", zipCode: "test")
     

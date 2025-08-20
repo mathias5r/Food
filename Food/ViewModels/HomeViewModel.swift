@@ -9,32 +9,34 @@ import Foundation
 import MapKit
 import Alamofire
 
-protocol ViewModalDelegate: AnyObject {
+protocol HomeViewModelDelegate: AnyObject {
     func didSearchComplete(results: [RestaurantModel], error: Error?)
     func didUpdateLocation(_ location: CLLocation)
     func didChangeAuthorization(_ status: CLAuthorizationStatus)
 }
 
-protocol ViewModelProtocol: AnyObject {
+protocol HomeViewModelProtocol: AnyObject {
     var restaurants: [RestaurantModel] { get }
-    var delegate: ViewModalDelegate? { get set }
+    var delegate: HomeViewModelDelegate? { get set }
     func searchFood(_ searchString: String, _ region: MKCoordinateRegion) -> Void
+    func getRecents() -> [String]
     func setRestaurants(_ locations: [RestaurantModel]) -> Void
     func getCoordsFromLocation(at index: Int) -> CLLocationCoordinate2D
 }
 
-class ViewModel: ViewModelProtocol, LocationManagerDelegate {
+class HomeViewModel: HomeViewModelProtocol, LocationManagerDelegate {
     
     // This weak reference allow the ViewModal and ViewController to be deallocated when the screen is hidden
-    weak var delegate: ViewModalDelegate?
+    weak var delegate: HomeViewModelDelegate?
     
     private let locationManager: LocationManagerProtocol
     private let httpClient: HttpClientProtocol
+    private let recentRepository: RecentRepository
     private var userLocation: CLLocation?
     
-    init(locationManager: LocationManagerProtocol, httpClient: HttpClientProtocol) {
+    init(locationManager: LocationManagerProtocol, httpClient: HttpClientProtocol, recentRepository: RecentRepository) {
         self.httpClient = httpClient
-        
+        self.recentRepository = recentRepository
         self.locationManager = locationManager
         self.locationManager.delegate = self
         self.locationManager.requestPermission()
@@ -54,6 +56,7 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
     }
     
     public func searchFood(_ searchString: String, _ region: MKCoordinateRegion) {
+        recentRepository.create(items: [searchString])
         struct Params: Encodable {
             let search: String;
             let lat: Double;
@@ -70,7 +73,6 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
                         if let data = data {
                             do {
                                 let restaurants = try JSONDecoder().decode([RestaurantModel].self, from: data)
-                                print(restaurants)
                                 self.setRestaurants(restaurants)
                                 self.didSearchComplete(results: restaurants)
                             } catch {
@@ -87,6 +89,10 @@ class ViewModel: ViewModelProtocol, LocationManagerDelegate {
                     }
             })
         }
+    }
+    
+    public func getRecents() -> [String] {
+        return self.recentRepository.get()
     }
     
     func didUpdateLocation(_ location: CLLocation) {

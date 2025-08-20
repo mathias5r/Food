@@ -12,22 +12,24 @@ struct HomeViewControllerWrapper: UIViewControllerRepresentable {
         return HomeFactory.viewController() as! HomeViewController
     }
     func updateUIViewController(_ uiViewController: HomeViewController, context: Context) {
-        // Handle updates from SwiftUI to UIKit if needed
     }
 }
 
 struct TabsView: View {
     var body: some View {
-        TabView {
-            HomeViewControllerWrapper()
-                .tabItem {
-                    Label("Home", systemImage: "house")
-                }
-            Text("Profile Tab")
-                .tabItem {
-                    Label("Profile", systemImage: "person.circle")
-                }
+        GeometryReader { geometry in
+            TabView {
+                HomeViewControllerWrapper()
+                    .tabItem {
+                        Label("Home", systemImage: "house")
+                    }.ignoresSafeArea(.all)
+                ProfileFactory.view()
+                    .tabItem {
+                        Label("Profile", systemImage: "person.circle")
+                    }
+            }
         }
+
     }
 }
     

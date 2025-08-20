@@ -17,9 +17,9 @@ class HomeViewController: UIViewController {
     
     var cancellables = Set<AnyCancellable>()
     
-    var viewModel: ViewModelProtocol!
+    var viewModel: HomeViewModelProtocol!
     
-    required init(viewModel: ViewModelProtocol) {
+    required init(viewModel: HomeViewModelProtocol) {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
     }
@@ -50,7 +50,17 @@ class HomeViewController: UIViewController {
         return searchTextField
     }()
     
-    lazy var tableView: UITableView = {
+    lazy var recentsView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.layer.cornerRadius = 16
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 48
+        tableView.isHidden = true
+        return tableView
+    }()
+    
+    lazy var restaurantsView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.layer.cornerRadius = 16
@@ -73,9 +83,14 @@ class HomeViewController: UIViewController {
         // initialize search input
         searchTextField.delegate = self
         
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "locationCell")
+        restaurantsView.delegate = self
+        restaurantsView.dataSource = self
+        restaurantsView.register(UITableViewCell.self, forCellReuseIdentifier: "locationCell")
+        
+        recentsView.delegate = self
+        recentsView.dataSource = self
+        recentsView.register(UITableViewCell.self, forCellReuseIdentifier: "recentCell")
+        
         self.setEmptyTableView()
         
         searchTextField.textPublisher
@@ -86,6 +101,7 @@ class HomeViewController: UIViewController {
                   if !search.isEmpty {
                       self.loading.startAnimating()
                       self.viewModel.searchFood(value ?? "", self.mapView.region)
+                      self.recentsView.reloadData()
                   }
               }
           })
@@ -99,12 +115,17 @@ class HomeViewController: UIViewController {
     }
     
     private func setupUI() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissRecents))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    
         view.addSubview(mapView)
         
         mapView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         mapView.heightAnchor.constraint(equalToConstant: view.bounds.size.height/2).isActive = true
         mapView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+//        mapView.addGestureRecognizer(tapGesture)
         
         view.addSubview(searchTextField)
         
@@ -114,38 +135,54 @@ class HomeViewController: UIViewController {
         searchTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
         searchTextField.returnKeyType = .go
         
-        view.addSubview(tableView)
+        view.addSubview(recentsView)
+        
+        recentsView.tag = 1
+        let heightFactor = viewModel.getRecents().count > 3 ? 3 : viewModel.getRecents().count
+        recentsView.heightAnchor.constraint(equalToConstant: CGFloat(44 * heightFactor)).isActive = true
+        recentsView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        recentsView.widthAnchor.constraint(equalToConstant: view.bounds.size.width/1.2).isActive = true;
+        recentsView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 16).isActive = true
+        recentsView.separatorStyle = .none
+//        recentsView.addGestureRecognizer(tapGesture)
+        
+        view.addSubview(restaurantsView)
 
-        tableView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
-        tableView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2 + view.safeAreaInsets.top).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        restaurantsView.tag = 2
+        restaurantsView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
+        restaurantsView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2 + view.safeAreaInsets.top).isActive = true
+        restaurantsView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
         view.addSubview(loading)
         
-        loading.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
-        loading.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
+        loading.centerXAnchor.constraint(equalTo: restaurantsView.centerXAnchor).isActive = true
+        loading.centerYAnchor.constraint(equalTo: restaurantsView.centerYAnchor).isActive = true
+    }
+    
+    @objc func dismissRecents() {
+        self.view.endEditing(true)
     }
     
     private func setEmptyTableView() {
-        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: restaurantsView.bounds.size.width, height: restaurantsView.bounds.size.height))
         messageLabel.text = "No Locations.\n Please, use the search input above!"
         messageLabel.textColor = .black
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .center
         messageLabel.sizeToFit()
         
-        tableView.backgroundView = messageLabel
+        restaurantsView.backgroundView = messageLabel
     }
     
     private func setErrorTableView() {
-        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: restaurantsView.bounds.size.width, height: restaurantsView.bounds.size.height))
         messageLabel.text = "Could not get restaurants.\n Please, try again later!"
         messageLabel.textColor = .red
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .center
         messageLabel.sizeToFit()
         
-        tableView.backgroundView = messageLabel
+        restaurantsView.backgroundView = messageLabel
     }
     
     private func setAnnotations(_ items: [RestaurantModel]) {
@@ -164,37 +201,72 @@ extension HomeViewController: UITextFieldDelegate {
         searchTextField.resignFirstResponder()
         return true
     }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if(viewModel.getRecents().count > 0) {
+            self.recentsView.isHidden = false
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.recentsView.isHidden = true
+        }
+    }
 }
 
 extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.restaurants.count
+        if(tableView.tag == 1) {
+            if(viewModel.getRecents().count > 3) {
+                return 3
+            } else {
+                return viewModel.getRecents().count
+            }
+        } else {
+            return viewModel.restaurants.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
-        guard let cell = tableCell else { return UITableViewCell() }
-        var content = cell.defaultContentConfiguration()
-        content.text = viewModel.restaurants[indexPath.row].name
-        let address = viewModel.restaurants[indexPath.row].address
-        let seecondaryText = address.toString()
-        content.secondaryText = seecondaryText
-        cell.contentConfiguration = content
-        return cell
+        if(tableView.tag == 1) {
+            let tableCell = tableView.dequeueReusableCell(withIdentifier: "recentCell")
+            guard let cell = tableCell else { return UITableViewCell() }
+            var content = cell.defaultContentConfiguration()
+            content.text = viewModel.getRecents()[indexPath.row]
+            content.image = UIImage(systemName: "clock")
+            cell.contentConfiguration = content
+            return cell
+        } else {
+            let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
+            guard let cell = tableCell else { return UITableViewCell() }
+            var content = cell.defaultContentConfiguration()
+            content.text = viewModel.restaurants[indexPath.row].name
+            let address = viewModel.restaurants[indexPath.row].address
+            let seecondaryText = address.toString()
+            content.secondaryText = seecondaryText
+            cell.contentConfiguration = content
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedRestaurant = viewModel.restaurants[indexPath.row]
-//      let detailsViewControler = DetailsFactory.viewController(restaurant: selectedRestaurant)
-        print(selectedRestaurant)
-        let detailsViewControler = DetailsFactory.viewUIController(restaurant: selectedRestaurant)
-        present(detailsViewControler, animated: true)
+        if(tableView.tag == 1) {
+            let searchString = viewModel.getRecents()[indexPath.row]
+            viewModel.searchFood(searchString, self.mapView.region)
+            self.recentsView.reloadData()
+            self.searchTextField.text = searchString
+        } else {
+            let selectedRestaurant = viewModel.restaurants[indexPath.row]
+            let detailsViewControler = DetailsFactory.viewUIController(restaurant: selectedRestaurant)
+            present(detailsViewControler, animated: true)
+        }
     }
 }
 
 extension HomeViewController: UITableViewDataSource {}
 
-extension HomeViewController: ViewModalDelegate {
+extension HomeViewController: HomeViewModelDelegate {
     func didUpdateLocation(_ location: CLLocation) {
         let coords = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
         let region = MKCoordinateRegion(center: coords, latitudinalMeters: 10000, longitudinalMeters: 10000)
@@ -221,14 +293,14 @@ extension HomeViewController: ViewModalDelegate {
             return
         }
         
-        self.tableView.backgroundView = nil
+        self.restaurantsView.backgroundView = nil
         self.loading.stopAnimating()
         if(results.count > 0) {
             setAnnotations(results)
         } else {
             self.setEmptyTableView()
         }
-        self.tableView.reloadData()
+        self.restaurantsView.reloadData()
     }
 }
 
