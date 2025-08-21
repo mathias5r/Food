@@ -6,58 +6,51 @@
 //
 
 import Foundation
-import CoreData
-import UIKit
+import RealmSwift
 
-class RecentRepository {
-    
-    let context: NSManagedObjectContext
-    
-    init(context: NSManagedObjectContext) {
-        self.context = context
-    }
-    
+protocol RecentRepositoryProtocal {
+    func get() -> [String]
+    func create(value: String)
+}
+
+class RecentRepository: RecentRepositoryProtocal {
     func get() -> [String] {
-        let fetchRequest: NSFetchRequest<Recents> = Recents.fetchRequest()
-        
         do {
-            let existingRecords = try context.fetch(fetchRequest)
+            let realm = try Realm()
             
-            if(existingRecords.count > 0) {
-                let recents = existingRecords.first
-                return recents?.list ?? []
+            let recents = realm.objects(RecentDTO.self).sorted(byKeyPath: "date", ascending: false)
+            
+            if(recents.count > 0) {
+                return recents.map { $0.toString() }
             } else {
-                print("No user was found")
+                print("[RecentRepository]: No recent was found")
                 return []
             }
         } catch {
-            print("Core Data get operation failed: \(error.localizedDescription)")
+            print("[RecentRepository]: get operation failed: \(error.localizedDescription)")
             return []
         }
     }
     
-    func create(items: [String]) {
-        let fetchRequest: NSFetchRequest<Recents> = Recents.fetchRequest()
-        
+    func create(value: String) {
         do {
-            let existingRecords = try context.fetch(fetchRequest)
+            let realm = try Realm()
             
-            if(existingRecords.count > 0) {
-                if let recents = existingRecords.first {
-                    let list = recents.list
-                    let newList = items + (list ?? [])
-                    var seenItems = Set<String>()
-                    let uniqueList = newList.filter { seenItems.insert($0).inserted }
-                    recents.list = uniqueList
-                    try context.save()
+            let recent = realm.objects(RecentDTO.self).filter("value == '\(value)'").first
+            
+            if let item = recent {
+                try realm.write {
+                    item.value = value
+                    item.date = Date()
                 }
             } else {
-                let recent = Recents(context: context)
-                recent.list = items
-                try context.save()
+                let newRecent = RecentDTO(value: value)
+                try realm.write {
+                    realm.add(newRecent)
+                }
             }
         } catch {
-            print("Core Data get operation failed: \(error.localizedDescription)")
+            print("[RecentRepository]: create operation failed: \(error.localizedDescription)")
         }
     }
 }

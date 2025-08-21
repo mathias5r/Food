@@ -6,114 +6,101 @@
 //
 
 import Foundation
-import CoreData
-import UIKit
+import RealmSwift
 
 protocol UserRepositoryProtocol {
-    func get() -> User?
-    func create(name: String, lastname: String, email: String, completion: @escaping (Bool) -> Void)
+    func get() -> UserModel?
+    func create(from user: UserModel, completion: @escaping (Bool) -> Void)
     func delete(completion: @escaping (Bool) -> Void)
-    func update(name: String?, lastname: String?, email: String?, completion: @escaping (Bool) -> Void)
+    func update(from user: UserModel, completion: @escaping (Bool) -> Void)
 }
 
 class UserRepository: UserRepositoryProtocol {
     
-    let context: NSManagedObjectContext
-    
-    init(context: NSManagedObjectContext) {
-        self.context = context
-    }
-    
-    func get() -> User? {
-        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
-        
+    func get() -> UserModel? {
         do {
-            let existingRecords = try context.fetch(fetchRequest)
+            let realm = try Realm()
             
-            if(existingRecords.count > 0) {
-                let user = existingRecords.first
-                return user
+            let users = realm.objects(UserDTO.self)
+            
+            if(users.count > 0) {
+                let user = users.first
+                return user?.toUser()
             } else {
                 print("No user was found")
                 return nil
             }
         } catch {
-            print("Core Data get operation failed: \(error.localizedDescription)")
+            print("[UserRepository]: get operation failed: \(error.localizedDescription)")
             return nil
         }
     }
     
     
-    func create(name: String, lastname: String, email: String, completion: @escaping (Bool) -> Void) {
+    func create(from user: UserModel, completion: @escaping (Bool) -> Void) {
         do {
-             let user = User(context: context)
-             user.name = name
-             user.lastname = lastname
-             user.email = email
-             user.id = UUID()
-             user.createdAt = Date()
-             user.updatedAt = Date()
-             
-             try context.save()
-             completion(true)
+            let realm = try! Realm()
+            
+            let item = UserDTO(from: user)
+            
+            try realm.write {
+                realm.add(item)
+            }
+            
+            completion(true)
          } catch {
-             print("Core Data create operation failed: \(error.localizedDescription)")
+             print("[UserRepository]: create operation failed: \(error.localizedDescription)")
              completion(false)
          }
     }
     
     func delete(completion: @escaping (Bool) -> Void) {
-        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
-        
         do {
-            let existingRecords = try context.fetch(fetchRequest)
+            let realm = try! Realm()
             
-            if(existingRecords.count > 0) {
-                if let user = existingRecords.first {
-                    context.delete(user)
+            let users = realm.objects(UserDTO.self)
+            
+            if(users.count > 0) {
+                if let user = users.first {
+                    try realm.write {
+                        realm.delete(user)
+                    }
                     completion(true)
                 } else {
                     completion(false)
                 }
             } else {
-                print("No user was found")
+                print("[UserRepository]: No user was found")
                 completion(false)
             }
         } catch {
-            print("Core Data delete operation failed: \(error.localizedDescription)")
+            print("[UserRepository]: delete operation failed: \(error.localizedDescription)")
             completion(false)
         }
     }
     
-    func update(name: String?, lastname: String?, email: String?, completion: @escaping (Bool) -> Void) {        
-        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
-        
+    func update(from user: UserModel, completion: @escaping (Bool) -> Void) {
         do {
-            let existingRecords = try context.fetch(fetchRequest)
+            let realm = try! Realm()
             
-             if(existingRecords.count > 0) {
-                 if let user = existingRecords.first {
-                     if let userName = name {
-                         user.name = userName
+            let users = realm.objects(UserDTO.self)
+            
+             if(users.count > 0) {
+                 if let item = users.first {
+                     try realm.write {
+                         item.update(from: user)
                      }
-                     if let userLastname = lastname {
-                         user.lastname = userLastname
-                     }
-                     if let userEmail = email {
-                         user.email = userEmail
-                     }
-                     try context.save()
                      completion(true)
                  } else {
                      completion(false)
                  }
              } else {
-                 print("No user was found")
+                 print("[UserRepository]: No user was found")
                  completion(false)
              }
     
          } catch {
-             print("Core Data update operation failed: \(error.localizedDescription)")
+             print("[UserRepository]: update operation failed: \(error.localizedDescription)")
              completion(false)
          }
     }

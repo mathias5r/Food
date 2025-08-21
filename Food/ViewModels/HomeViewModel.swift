@@ -56,7 +56,7 @@ class HomeViewModel: HomeViewModelProtocol, LocationManagerDelegate {
     }
     
     public func searchFood(_ searchString: String, _ region: MKCoordinateRegion) {
-        recentRepository.create(items: [searchString])
+        recentRepository.create(value: searchString)
         struct Params: Encodable {
             let search: String;
             let lat: Double;

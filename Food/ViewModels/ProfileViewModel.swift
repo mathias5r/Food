@@ -8,43 +8,32 @@
 import Foundation
 
 protocol ProfileViewModelProtocol {
-    func saveProfile(profile: ProfileModel)
-    func getProfile() -> ProfileModel?
+    func saveProfile(name: String, lastname: String, email: String)
+    func getProfile() -> UserModel?
 }
 
 class ProfileViewModel: ProfileViewModelProtocol {
-    private let userRepository: UserRepositoryProtocol?
+    private let userRepository: UserRepositoryProtocol
     
     init(userRepository: UserRepositoryProtocol) {
         self.userRepository = userRepository
     }
     
-    public func saveProfile(profile: ProfileModel) {
-        guard let repository = self.userRepository else {
-            print("User repository not defined")
-            return
-        }
-        
-        if (repository.get() != nil) {
-            repository.update(name: profile.name, lastname: profile.lastname, email: profile.email) { completed in
+    public func saveProfile(name: String, lastname: String, email: String) {
+        if userRepository.get() != nil {
+            userRepository.update(from: UserModel(name: name, lastname: lastname, email: email)) { completed in
                 print("User updated: \(completed)")
             }
-            return
-        }
-        
-        repository.create(name: profile.name, lastname: profile.lastname, email: profile.email) { completed in
-            print("User created: \(completed)")
+        } else {
+            userRepository.create(from: UserModel(name: name, lastname: lastname, email: email)) { completed in
+                print("User created: \(completed)")
+            }
         }
     }
     
-    public func getProfile() -> ProfileModel? {
-        guard let repository = self.userRepository else {
-            print("User repository not defined")
-            return nil
-        }
-        if let user = repository.get() {
-            print(user.name)
-            return ProfileModel(name: user.name, lastname: user.lastname, email: user.email)
+    public func getProfile() -> UserModel? {
+        if let user = userRepository.get() {
+            return user
         }
         return nil
     }
