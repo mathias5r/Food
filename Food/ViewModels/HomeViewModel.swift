@@ -31,10 +31,10 @@ class HomeViewModel: HomeViewModelProtocol, LocationManagerDelegate {
     
     private let locationManager: LocationManagerProtocol
     private let httpClient: HttpClientProtocol
-    private let recentRepository: RecentRepository
+    private let recentRepository: RecentRepositoryProtocal
     private var userLocation: CLLocation?
     
-    init(locationManager: LocationManagerProtocol, httpClient: HttpClientProtocol, recentRepository: RecentRepository) {
+    init(locationManager: LocationManagerProtocol, httpClient: HttpClientProtocol, recentRepository: RecentRepositoryProtocal) {
         self.httpClient = httpClient
         self.recentRepository = recentRepository
         self.locationManager = locationManager

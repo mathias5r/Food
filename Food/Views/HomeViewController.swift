@@ -258,8 +258,9 @@ extension HomeViewController: UITableViewDelegate {
             self.searchTextField.text = searchString
         } else {
             let selectedRestaurant = viewModel.restaurants[indexPath.row]
-            let detailsViewControler = DetailsFactory.viewUIController(restaurant: selectedRestaurant)
-            present(detailsViewControler, animated: true)
+            let detailsView = DetailsFactory.view(restaurant: selectedRestaurant)
+            let detailsController = UIHostingController(rootView: detailsView)
+            present(detailsController, animated: true)
         }
     }
 }

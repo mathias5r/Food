@@ -8,21 +8,11 @@
 import UIKit
 import SwiftUI
 
-protocol DetailsFactoryProtocol {
-   static func viewController(restaurant: RestaurantModel) -> UIViewController
-}
-
-class DetailsFactory: DetailsFactoryProtocol {
-    static func viewController(restaurant: RestaurantModel) -> UIViewController {
-        let viewController = DetailsViewController()
-        viewController.restaurant = restaurant
-        return viewController;
-    }
-    
-    static func viewUIController(restaurant: RestaurantModel) -> UIViewController {
-        var view = DetailsViewControllerSwiftUI(restaurant: restaurant)
-        let hostingController = UIHostingController(rootView: view)
-        return hostingController
+class DetailsFactory {
+    static func view(restaurant: RestaurantModel) -> some View {
+        let favoriteRepository = FavouriteRepository()
+        let viewModel = DetailsViewModel(favoriteRepository: favoriteRepository)
+        return DetailsView(restaurant: restaurant)
     }
 }
 

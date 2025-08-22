@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-struct DetailsViewControllerSwiftUI: View {
+struct DetailsView: View {
     @Environment(\.dismiss) var dismiss
     
     var restaurant: RestaurantModel?
+    
+    var viewModel: DetailsViewModelProtocol?
     
     var body: some View {
         if let item = restaurant {
@@ -121,11 +123,11 @@ struct DetailsViewControllerSwiftUI: View {
     }
 }
 
-struct DetailsViewControllerSwiftUI_Preview: PreviewProvider {
+struct DetailsView_Preview: PreviewProvider {
     static var previews: some View {
         let location: LocationModel = LocationModel(lat: 37.3401, long: -122.0155);
         let address: AddressModel = AddressModel(country: "USA", street: "123 Main St", city: "Cupertino", state: "CA", zipCode: "95014")
-        let restaurant: RestaurantModel = RestaurantModel(name: "Pizza Palace", location: location, address: address, image: "https://images.unsplash.com/photo-1544455667-66f30d0412cd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", phone: "+1-418-543-8090", rating: 1.0, cuisine: "Italian")
-        DetailsViewControllerSwiftUI(restaurant: restaurant)
+        let restaurant: RestaurantModel = RestaurantModel(_id: "id", name: "Pizza Palace", location: location, address: address, image: "https://images.unsplash.com/photo-1544455667-66f30d0412cd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", phone: "+1-418-543-8090", rating: 1.0, cuisine: "Italian")
+        DetailsView(restaurant: restaurant)
     }
 }
