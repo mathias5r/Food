@@ -23,7 +23,7 @@ class FavouriteRepository: FavouriteRepositoryProtocal {
             if(restaurants.count > 0) {
                 return restaurants.map { $0.toRestaurant() }
             } else {
-                print("[RecentRepository]: No recent was found")
+                print("[FavouriteRepository]: No recent was found")
                 return []
             }
         } catch {

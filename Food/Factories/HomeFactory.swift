@@ -16,7 +16,8 @@ class HomeFactory: HomeFactoryProtocol {
         let locationManager = LocationManager.shared
         let httpClient = HttpClient.shared
         let recentsRepository = RecentRepository()
-        let viewModel = HomeViewModel(locationManager: locationManager, httpClient: httpClient, recentRepository: recentsRepository)
+        let favoriteRepository = FavouriteRepository()
+        let viewModel = HomeViewModel(locationManager: locationManager, httpClient: httpClient, recentRepository: recentsRepository, favoriteRepository: favoriteRepository)
         let viewController = HomeViewController(viewModel: viewModel)
         return viewController;
     }

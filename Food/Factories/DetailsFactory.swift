@@ -12,7 +12,7 @@ class DetailsFactory {
     static func view(restaurant: RestaurantModel) -> some View {
         let favoriteRepository = FavouriteRepository()
         let viewModel = DetailsViewModel(favoriteRepository: favoriteRepository)
-        return DetailsView(restaurant: restaurant)
+        return DetailsView(restaurant: restaurant, viewModel: viewModel)
     }
 }
 

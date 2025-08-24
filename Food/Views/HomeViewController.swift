@@ -216,7 +216,21 @@ extension HomeViewController: UITextFieldDelegate {
 }
 
 extension HomeViewController: UITableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        let favoriteCount = viewModel.getFavorites().count
+        if favoriteCount > 0 {
+            return 2
+        } else {
+            return 1
+        }
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let favorites = viewModel.getFavorites().count
+        if favorites > 0 && section == 0 {
+           return favorites
+        }
+        
         if(tableView.tag == 1) {
             if(viewModel.getRecents().count > 3) {
                 return 3
@@ -237,17 +251,28 @@ extension HomeViewController: UITableViewDelegate {
             content.image = UIImage(systemName: "clock")
             cell.contentConfiguration = content
             return cell
-        } else {
-            let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
-            guard let cell = tableCell else { return UITableViewCell() }
-            var content = cell.defaultContentConfiguration()
-            content.text = viewModel.restaurants[indexPath.row].name
-            let address = viewModel.restaurants[indexPath.row].address
+        }
+        
+        let tableCell = tableView.dequeueReusableCell(withIdentifier: "locationCell")
+        guard let cell = tableCell else { return UITableViewCell() }
+        var content = cell.defaultContentConfiguration()
+        
+        let favorites = viewModel.getFavorites()
+        if(tableView.tag == 2 && favorites.count > 0 && indexPath.section == 0){
+            content.text = favorites[indexPath.row].name
+            let address = favorites[indexPath.row].address
             let seecondaryText = address.toString()
             content.secondaryText = seecondaryText
             cell.contentConfiguration = content
             return cell
         }
+        
+        content.text = viewModel.restaurants[indexPath.row].name
+        let address = viewModel.restaurants[indexPath.row].address
+        let seecondaryText = address.toString()
+        content.secondaryText = seecondaryText
+        cell.contentConfiguration = content
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -256,12 +281,32 @@ extension HomeViewController: UITableViewDelegate {
             viewModel.searchFood(searchString, self.mapView.region)
             self.recentsView.reloadData()
             self.searchTextField.text = searchString
-        } else {
-            let selectedRestaurant = viewModel.restaurants[indexPath.row]
+        }
+        
+        let favorites = viewModel.getFavorites()
+        if(tableView.tag == 2 && favorites.count > 0) {
+            let selectedRestaurant = favorites[indexPath.row]
             let detailsView = DetailsFactory.view(restaurant: selectedRestaurant)
             let detailsController = UIHostingController(rootView: detailsView)
             present(detailsController, animated: true)
+            return;
         }
+        
+        let selectedRestaurant = viewModel.restaurants[indexPath.row]
+        let detailsView = DetailsFactory.view(restaurant: selectedRestaurant)
+        let detailsController = UIHostingController(rootView: detailsView)
+        present(detailsController, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let favorites = viewModel.getFavorites().count
+        if favorites > 0 && section == 0 {
+           return "Your favorite restaurants"
+        }
+        if favorites > 0 && section == 1 {
+           return "Search results"
+        }
+        return ""
     }
 }
 
