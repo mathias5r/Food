@@ -18,7 +18,7 @@ class FavouriteRepository: FavouriteRepositoryProtocal {
         do {
             let realm = try Realm()
             
-            let restaurants = realm.objects(RestaurantDTO.self).sorted(byKeyPath: "visits", ascending: false)
+            let restaurants = realm.objects(RestaurantDTO.self).sorted(byKeyPath: "visits", ascending: false).filter("visits >= 3")
             
             if(restaurants.count > 0) {
                 return restaurants.map { $0.toRestaurant() }

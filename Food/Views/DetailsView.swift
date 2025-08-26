@@ -8,11 +8,9 @@
 import SwiftUI
 
 struct DetailsView: View {
-    @Environment(\.dismiss) var dismiss
-    
     var restaurant: RestaurantModel?
-    
     var viewModel: DetailsViewModelProtocol
+    var onClose: (() -> Void)
     
     var body: some View {
         if let item = restaurant {
@@ -45,6 +43,7 @@ struct DetailsView: View {
                             title: "Order",
                             action: {
                                 viewModel.favoriteRestaurant(item)
+                                onClose()
                             })
                         .padding([.leading, .trailing], 16)
                     }
@@ -73,7 +72,7 @@ struct DetailsView: View {
     
     func closeButton(_ geometry: GeometryProxy) -> some View {
         Button(action: {
-            dismiss()
+            onClose()
         }) {
             Image(systemName: "xmark")
         }
@@ -135,6 +134,6 @@ struct DetailsView_Preview: PreviewProvider {
         let address: AddressModel = AddressModel(country: "USA", street: "123 Main St", city: "Cupertino", state: "CA", zipCode: "95014")
         let restaurant: RestaurantModel = RestaurantModel(_id: "id", name: "Pizza Palace", location: location, address: address, image: "https://images.unsplash.com/photo-1544455667-66f30d0412cd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", phone: "+1-418-543-8090", rating: 1.0, cuisine: "Italian")
         let viewModel = DetailsViewModel(favoriteRepository: FavouriteRepository())
-        DetailsView(restaurant: restaurant, viewModel: viewModel)
+        DetailsView(restaurant: restaurant, viewModel: viewModel, onClose: {})
     }
 }

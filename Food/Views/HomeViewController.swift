@@ -10,7 +10,9 @@ import MapKit
 import Combine
 import SwiftUI
 
-class HomeViewController: UIViewController {
+// MARK: - HomeViewController
+
+class HomeViewController: UIViewController  {
     var safeAreaInsets: UIEdgeInsets?
     
     var isLoading: Bool = false
@@ -125,7 +127,6 @@ class HomeViewController: UIViewController {
         mapView.heightAnchor.constraint(equalToConstant: view.bounds.size.height/2).isActive = true
         mapView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-//        mapView.addGestureRecognizer(tapGesture)
         
         view.addSubview(searchTextField)
         
@@ -144,7 +145,6 @@ class HomeViewController: UIViewController {
         recentsView.widthAnchor.constraint(equalToConstant: view.bounds.size.width/1.2).isActive = true;
         recentsView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 16).isActive = true
         recentsView.separatorStyle = .none
-//        recentsView.addGestureRecognizer(tapGesture)
         
         view.addSubview(restaurantsView)
 
@@ -152,6 +152,7 @@ class HomeViewController: UIViewController {
         restaurantsView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true;
         restaurantsView.heightAnchor.constraint(equalToConstant: view.bounds.size.height / 2 + view.safeAreaInsets.top).isActive = true
         restaurantsView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        restaurantsView.separatorStyle = .none
         
         view.addSubview(loading)
         
@@ -196,6 +197,8 @@ class HomeViewController: UIViewController {
     }
 }
 
+// MARK: - Search TextFieldDelegate methods
+
 extension HomeViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.resignFirstResponder()
@@ -203,6 +206,7 @@ extension HomeViewController: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        print(viewModel.getRecents().count)
         if(viewModel.getRecents().count > 0) {
             self.recentsView.isHidden = false
         }
@@ -215,31 +219,37 @@ extension HomeViewController: UITextFieldDelegate {
     }
 }
 
+// MARK: - Restaurant TableViewDelegate methods
+
 extension HomeViewController: UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
+        if tableView.tag == 1 {
+            return 1
+        }
+        
         let favoriteCount = viewModel.getFavorites().count
         if favoriteCount > 0 {
             return 2
-        } else {
-            return 1
         }
+        
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let favorites = viewModel.getFavorites().count
-        if favorites > 0 && section == 0 {
-           return favorites
-        }
-        
         if(tableView.tag == 1) {
             if(viewModel.getRecents().count > 3) {
                 return 3
             } else {
                 return viewModel.getRecents().count
             }
-        } else {
-            return viewModel.restaurants.count
         }
+        
+        let favorites = viewModel.getFavorites().count
+        if favorites > 0 && section == 0 {
+           return favorites
+        }
+        
+        return viewModel.restaurants.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -258,7 +268,7 @@ extension HomeViewController: UITableViewDelegate {
         var content = cell.defaultContentConfiguration()
         
         let favorites = viewModel.getFavorites()
-        if(tableView.tag == 2 && favorites.count > 0 && indexPath.section == 0){
+        if(favorites.count > 0 && indexPath.section == 0){
             content.text = favorites[indexPath.row].name
             let address = favorites[indexPath.row].address
             let seecondaryText = address.toString()
@@ -281,24 +291,35 @@ extension HomeViewController: UITableViewDelegate {
             viewModel.searchFood(searchString, self.mapView.region)
             self.recentsView.reloadData()
             self.searchTextField.text = searchString
+            return
         }
         
         let favorites = viewModel.getFavorites()
-        if(tableView.tag == 2 && favorites.count > 0) {
+        if(tableView.tag == 2 && indexPath.section == 0 && favorites.count > 0) {
             let selectedRestaurant = favorites[indexPath.row]
-            let detailsView = DetailsFactory.view(restaurant: selectedRestaurant)
+            let detailsView = DetailsFactory.view(restaurant: selectedRestaurant, onClose: {
+                self.restaurantsView.reloadData()
+                self.dismiss(animated: true)
+            })
             let detailsController = UIHostingController(rootView: detailsView)
             present(detailsController, animated: true)
             return;
         }
         
         let selectedRestaurant = viewModel.restaurants[indexPath.row]
-        let detailsView = DetailsFactory.view(restaurant: selectedRestaurant)
+        let detailsView = DetailsFactory.view(restaurant: selectedRestaurant, onClose: {
+            self.restaurantsView.reloadData()
+            self.dismiss(animated: true)
+        })
         let detailsController = UIHostingController(rootView: detailsView)
         present(detailsController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if tableView.tag == 1 {
+            return ""
+        }
+        
         let favorites = viewModel.getFavorites().count
         if favorites > 0 && section == 0 {
            return "Your favorite restaurants"
@@ -311,6 +332,8 @@ extension HomeViewController: UITableViewDelegate {
 }
 
 extension HomeViewController: UITableViewDataSource {}
+
+// MARK: - HomeViewDelegate Methods
 
 extension HomeViewController: HomeViewModelDelegate {
     func didUpdateLocation(_ location: CLLocation) {
@@ -341,12 +364,13 @@ extension HomeViewController: HomeViewModelDelegate {
         
         self.restaurantsView.backgroundView = nil
         self.loading.stopAnimating()
+        
         if(results.count > 0) {
             setAnnotations(results)
         } else {
             self.setEmptyTableView()
         }
         self.restaurantsView.reloadData()
+        self.recentsView.reloadData()
     }
 }
-

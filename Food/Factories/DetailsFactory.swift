@@ -9,10 +9,10 @@ import UIKit
 import SwiftUI
 
 class DetailsFactory {
-    static func view(restaurant: RestaurantModel) -> some View {
+    static func view(restaurant: RestaurantModel, onClose: @escaping () -> Void) -> some View {
         let favoriteRepository = FavouriteRepository()
         let viewModel = DetailsViewModel(favoriteRepository: favoriteRepository)
-        return DetailsView(restaurant: restaurant, viewModel: viewModel)
+        return DetailsView(restaurant: restaurant, viewModel: viewModel, onClose: onClose)
     }
 }
 
