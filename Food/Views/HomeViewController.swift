@@ -21,6 +21,8 @@ class HomeViewController: UIViewController  {
     
     var viewModel: HomeViewModelProtocol!
     
+    var recentsHeightAnchor: NSLayoutConstraint?
+    
     required init(viewModel: HomeViewModelProtocol) {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
@@ -139,8 +141,6 @@ class HomeViewController: UIViewController  {
         view.addSubview(recentsView)
         
         recentsView.tag = 1
-        let heightFactor = viewModel.getRecents().count > 3 ? 3 : viewModel.getRecents().count
-        recentsView.heightAnchor.constraint(equalToConstant: CGFloat(44 * heightFactor)).isActive = true
         recentsView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         recentsView.widthAnchor.constraint(equalToConstant: view.bounds.size.width/1.2).isActive = true;
         recentsView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 16).isActive = true
@@ -195,6 +195,12 @@ class HomeViewController: UIViewController  {
             self.mapView.addAnnotation(annotation)
         }
     }
+    
+    private func updateRecentsHeight(_ factor: Int) {
+        self.recentsHeightAnchor?.isActive = false
+        self.recentsHeightAnchor = recentsView.heightAnchor.constraint(equalToConstant: CGFloat(44 * ([factor, 3].min() ?? 0)))
+        self.recentsHeightAnchor?.isActive = true
+    }
 }
 
 // MARK: - Search TextFieldDelegate methods
@@ -206,8 +212,9 @@ extension HomeViewController: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        print(viewModel.getRecents().count)
-        if(viewModel.getRecents().count > 0) {
+        let recents = viewModel.getRecents().count
+        if recents > 0 {
+            self.updateRecentsHeight(recents)
             self.recentsView.isHidden = false
         }
     }
@@ -363,6 +370,7 @@ extension HomeViewController: HomeViewModelDelegate {
         }
         
         self.restaurantsView.backgroundView = nil
+        self.restaurantsView.reloadData()
         self.loading.stopAnimating()
         
         if(results.count > 0) {
@@ -370,7 +378,11 @@ extension HomeViewController: HomeViewModelDelegate {
         } else {
             self.setEmptyTableView()
         }
-        self.restaurantsView.reloadData()
-        self.recentsView.reloadData()
+        
+        let recents = viewModel.getRecents().count
+        if(recents > 0) {
+            self.updateRecentsHeight(recents)
+            self.recentsView.reloadData()
+        }
     }
 }
