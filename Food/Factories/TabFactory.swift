@@ -14,7 +14,7 @@ protocol TabFactoryProtocol {
 
 class TabFactory: TabFactoryProtocol {
     static func viewController() -> UIViewController {
-        var view = TabsView()
+        let view = TabsView()
         let hostingController = UIHostingController(rootView: view)
         return hostingController
     }

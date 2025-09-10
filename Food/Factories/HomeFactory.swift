@@ -15,11 +15,9 @@ class HomeFactory: HomeFactoryProtocol {
     static func viewController() -> UIViewController {
         let locationManager = LocationManager.shared
         let httpClient = HttpClient.shared
-        guard let context = (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext else {
-            fatalError()
-        }
-        let recentsRepository = RecentRepository(context: context)
-        let viewModel = HomeViewModel(locationManager: locationManager, httpClient: httpClient, recentRepository: recentsRepository)
+        let recentsRepository = RecentRepository()
+        let favoriteRepository = FavouriteRepository()
+        let viewModel = HomeViewModel(locationManager: locationManager, httpClient: httpClient, recentRepository: recentsRepository, favoriteRepository: favoriteRepository)
         let viewController = HomeViewController(viewModel: viewModel)
         return viewController;
     }

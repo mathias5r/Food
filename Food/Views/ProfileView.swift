@@ -22,31 +22,29 @@ struct ProfileView: View {
                 Input(text: $email, placeholder: "Email", label: "Email").textInputAutocapitalization(.never)
                 Spacer()
                 PrimaryButton(title: "Save", action: {
-                    let profile = ProfileModel(name: name, lastname: lastname, email: email)
-                    viewModel.saveProfile(profile: profile)
+                    viewModel.saveProfile(name: name, lastname: lastname, email: email)
                 })
             }.padding(32)
         }.onAppear(perform: {
-            let profile = viewModel.getProfile()
-            name = profile?.name ?? ""
-            lastname = profile?.lastname ?? ""
-            email = profile?.email ?? ""
+            if let user = viewModel.getProfile() {
+                name = user.name
+                lastname = user.lastname
+                email = user.email
+            }
         })
     }
 }
 
 private class EmptyUserRepository: UserRepositoryProtocol {
-    func get() -> User? {
+    func get() -> UserModel? {
         return nil
     }
     
-    func create(name: String, lastname: String, email: String, completion: @escaping (Bool) -> Void) {}
+    func create(from user: UserModel, completion: @escaping (Bool) -> Void) {}
     
     func delete(completion: @escaping (Bool) -> Void) {}
     
-    func update(name: String?, lastname: String?, email: String?, completion: @escaping (Bool) -> Void) {}
-    
-    
+    func update(from user: UserModel, completion: @escaping (Bool) -> Void) {}
 }
 
 struct ProfileView_Preview: PreviewProvider {

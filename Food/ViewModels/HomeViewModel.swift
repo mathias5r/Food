@@ -20,6 +20,7 @@ protocol HomeViewModelProtocol: AnyObject {
     var delegate: HomeViewModelDelegate? { get set }
     func searchFood(_ searchString: String, _ region: MKCoordinateRegion) -> Void
     func getRecents() -> [String]
+    func getFavorites() -> [RestaurantModel]
     func setRestaurants(_ locations: [RestaurantModel]) -> Void
     func getCoordsFromLocation(at index: Int) -> CLLocationCoordinate2D
 }
@@ -31,12 +32,14 @@ class HomeViewModel: HomeViewModelProtocol, LocationManagerDelegate {
     
     private let locationManager: LocationManagerProtocol
     private let httpClient: HttpClientProtocol
-    private let recentRepository: RecentRepository
+    private let recentRepository: RecentRepositoryProtocal
+    private let favoriteRepository: FavouriteRepositoryProtocal
     private var userLocation: CLLocation?
     
-    init(locationManager: LocationManagerProtocol, httpClient: HttpClientProtocol, recentRepository: RecentRepository) {
+    init(locationManager: LocationManagerProtocol, httpClient: HttpClientProtocol, recentRepository: RecentRepositoryProtocal, favoriteRepository: FavouriteRepositoryProtocal) {
         self.httpClient = httpClient
         self.recentRepository = recentRepository
+        self.favoriteRepository = favoriteRepository
         self.locationManager = locationManager
         self.locationManager.delegate = self
         self.locationManager.requestPermission()
@@ -56,7 +59,7 @@ class HomeViewModel: HomeViewModelProtocol, LocationManagerDelegate {
     }
     
     public func searchFood(_ searchString: String, _ region: MKCoordinateRegion) {
-        recentRepository.create(items: [searchString])
+        recentRepository.create(value: searchString)
         struct Params: Encodable {
             let search: String;
             let lat: Double;
@@ -93,6 +96,10 @@ class HomeViewModel: HomeViewModelProtocol, LocationManagerDelegate {
     
     public func getRecents() -> [String] {
         return self.recentRepository.get()
+    }
+    
+    public func getFavorites() -> [RestaurantModel] {
+        return self.favoriteRepository.get()
     }
     
     func didUpdateLocation(_ location: CLLocation) {
