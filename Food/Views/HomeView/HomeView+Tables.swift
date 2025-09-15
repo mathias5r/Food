@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import FoodDomain
 
 extension HomeViewController: UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {

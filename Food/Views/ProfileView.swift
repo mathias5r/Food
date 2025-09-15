@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+import FoodData
+import FoodDomain
+import FoodUI
 
 struct ProfileView: View {
     @State var name: String = ""

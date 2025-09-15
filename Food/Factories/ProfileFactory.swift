@@ -7,7 +7,7 @@
 
 import UIKit
 import SwiftUI
-
+import FoodData
 
 class ProfileFactory {
     static func view() ->  some View {

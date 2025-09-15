@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import FoodData
+import FoodDomain
 
 protocol DetailsViewModelProtocol {
     func favoriteRestaurant(_ restaurant: RestaurantModel)

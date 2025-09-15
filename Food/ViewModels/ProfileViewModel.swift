@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import FoodData
+import FoodDomain
 
 protocol ProfileViewModelProtocol {
     func saveProfile(name: String, lastname: String, email: String)

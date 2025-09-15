@@ -7,6 +7,8 @@
 
 import UIKit
 import SwiftUI
+import FoodData
+import FoodDomain
 
 class DetailsFactory {
     static func view(restaurant: RestaurantModel, onClose: @escaping () -> Void) -> some View {

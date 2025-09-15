@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+import FoodData
+import FoodDomain
+import FoodUI
 
 struct DetailsView: View {
     var restaurant: RestaurantModel?

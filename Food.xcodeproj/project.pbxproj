@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A70E7A7B2E564D56008B37E5 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A70E7A7A2E564D56008B37E5 /* RealmSwift */; };
+		A706B6DB2E722D490036ADFA /* FoodData in Frameworks */ = {isa = PBXBuildFile; productRef = A706B6DA2E722D490036ADFA /* FoodData */; };
+		A706B7802E7445F50036ADFA /* FoodDomain in Frameworks */ = {isa = PBXBuildFile; productRef = A706B77F2E7445F50036ADFA /* FoodDomain */; };
 		A740F8932DEA689B00B7534D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A740F8922DEA689B00B7534D /* Alamofire */; };
+		A7BCC2CE2E785133008F9A7A /* FoodUI in Frameworks */ = {isa = PBXBuildFile; productRef = A7BCC2CD2E785133008F9A7A /* FoodUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -22,9 +24,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A706B6D82E722C3D0036ADFA /* FoodData */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FoodData; path = ../FoodData; sourceTree = SOURCE_ROOT; };
+		A706B77E2E74458F0036ADFA /* FoodDomain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FoodDomain; path = ../FoodDomain; sourceTree = SOURCE_ROOT; };
 		A7750B1E2D83B4CB00561745 /* Food.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Food.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A79F41672E02068100B82F81 /* FoodTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A79F41702E020BC000B82F81 /* Food.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Food.xctestplan; sourceTree = "<group>"; };
+		A7BCC2CC2E785054008F9A7A /* FoodUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FoodUI; path = ../FoodUI; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -58,7 +63,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A70E7A7B2E564D56008B37E5 /* RealmSwift in Frameworks */,
+				A7BCC2CE2E785133008F9A7A /* FoodUI in Frameworks */,
+				A706B6DB2E722D490036ADFA /* FoodData in Frameworks */,
+				A706B7802E7445F50036ADFA /* FoodDomain in Frameworks */,
 				A740F8932DEA689B00B7534D /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -73,12 +80,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A706B6D92E722D490036ADFA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A7750B152D83B4CB00561745 = {
 			isa = PBXGroup;
 			children = (
+				A7BCC2CC2E785054008F9A7A /* FoodUI */,
+				A706B77E2E74458F0036ADFA /* FoodDomain */,
+				A706B6D82E722C3D0036ADFA /* FoodData */,
 				A79F41702E020BC000B82F81 /* Food.xctestplan */,
 				A7750B202D83B4CB00561745 /* Food */,
 				A79F41682E02068100B82F81 /* FoodTests */,
+				A706B6D92E722D490036ADFA /* Frameworks */,
 				A7750B1F2D83B4CB00561745 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -113,7 +131,9 @@
 			name = Food;
 			packageProductDependencies = (
 				A740F8922DEA689B00B7534D /* Alamofire */,
-				A70E7A7A2E564D56008B37E5 /* RealmSwift */,
+				A706B6DA2E722D490036ADFA /* FoodData */,
+				A706B77F2E7445F50036ADFA /* FoodDomain */,
+				A7BCC2CD2E785133008F9A7A /* FoodUI */,
 			);
 			productName = Food;
 			productReference = A7750B1E2D83B4CB00561745 /* Food.app */;
@@ -172,7 +192,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A740F8912DEA689B00B7534D /* XCRemoteSwiftPackageReference "Alamofire" */,
-				A70E7A772E564D56008B37E5 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7750B1F2D83B4CB00561745 /* Products */;
@@ -472,14 +491,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A70E7A772E564D56008B37E5 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		A740F8912DEA689B00B7534D /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -491,15 +502,22 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A70E7A7A2E564D56008B37E5 /* RealmSwift */ = {
+		A706B6DA2E722D490036ADFA /* FoodData */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A70E7A772E564D56008B37E5 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
+			productName = FoodData;
+		};
+		A706B77F2E7445F50036ADFA /* FoodDomain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FoodDomain;
 		};
 		A740F8922DEA689B00B7534D /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A740F8912DEA689B00B7534D /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		A7BCC2CD2E785133008F9A7A /* FoodUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FoodUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
