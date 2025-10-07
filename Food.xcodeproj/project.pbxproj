@@ -10,6 +10,8 @@
 		A706B6DB2E722D490036ADFA /* FoodData in Frameworks */ = {isa = PBXBuildFile; productRef = A706B6DA2E722D490036ADFA /* FoodData */; };
 		A706B7802E7445F50036ADFA /* FoodDomain in Frameworks */ = {isa = PBXBuildFile; productRef = A706B77F2E7445F50036ADFA /* FoodDomain */; };
 		A740F8932DEA689B00B7534D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A740F8922DEA689B00B7534D /* Alamofire */; };
+		A7B071262E9554BD00CB6F8D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = A7B071252E9554BD00CB6F8D /* Lottie */; };
+		A7B0712C2E9565C600CB6F8D /* order.json in Resources */ = {isa = PBXBuildFile; fileRef = A7B0712B2E9565C600CB6F8D /* order.json */; };
 		A7BCC2CE2E785133008F9A7A /* FoodUI in Frameworks */ = {isa = PBXBuildFile; productRef = A7BCC2CD2E785133008F9A7A /* FoodUI */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +31,7 @@
 		A7750B1E2D83B4CB00561745 /* Food.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Food.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A79F41672E02068100B82F81 /* FoodTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A79F41702E020BC000B82F81 /* Food.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Food.xctestplan; sourceTree = "<group>"; };
+		A7B0712B2E9565C600CB6F8D /* order.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = order.json; sourceTree = "<group>"; };
 		A7BCC2CC2E785054008F9A7A /* FoodUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FoodUI; path = ../FoodUI; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -63,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7B071262E9554BD00CB6F8D /* Lottie in Frameworks */,
 				A7BCC2CE2E785133008F9A7A /* FoodUI in Frameworks */,
 				A706B6DB2E722D490036ADFA /* FoodData in Frameworks */,
 				A706B7802E7445F50036ADFA /* FoodDomain in Frameworks */,
@@ -98,6 +102,7 @@
 				A79F41682E02068100B82F81 /* FoodTests */,
 				A706B6D92E722D490036ADFA /* Frameworks */,
 				A7750B1F2D83B4CB00561745 /* Products */,
+				A7B0712B2E9565C600CB6F8D /* order.json */,
 			);
 			sourceTree = "<group>";
 		};
@@ -134,6 +139,7 @@
 				A706B6DA2E722D490036ADFA /* FoodData */,
 				A706B77F2E7445F50036ADFA /* FoodDomain */,
 				A7BCC2CD2E785133008F9A7A /* FoodUI */,
+				A7B071252E9554BD00CB6F8D /* Lottie */,
 			);
 			productName = Food;
 			productReference = A7750B1E2D83B4CB00561745 /* Food.app */;
@@ -192,6 +198,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A740F8912DEA689B00B7534D /* XCRemoteSwiftPackageReference "Alamofire" */,
+				A7B071242E9554BD00CB6F8D /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A7750B1F2D83B4CB00561745 /* Products */;
@@ -209,6 +216,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7B0712C2E9565C600CB6F8D /* order.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,6 +507,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		A7B071242E9554BD00CB6F8D /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -514,6 +530,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A740F8912DEA689B00B7534D /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		A7B071252E9554BD00CB6F8D /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A7B071242E9554BD00CB6F8D /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 		A7BCC2CD2E785133008F9A7A /* FoodUI */ = {
 			isa = XCSwiftPackageProductDependency;

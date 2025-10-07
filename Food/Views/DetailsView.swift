@@ -9,48 +9,61 @@ import SwiftUI
 import FoodData
 import FoodDomain
 import FoodUI
+import Lottie
 
 struct DetailsView: View {
+    @State private var playbackMode: LottiePlaybackMode = LottiePlaybackMode.paused
+    
     var restaurant: RestaurantModel?
     var viewModel: DetailsViewModelProtocol
     var onClose: (() -> Void)
     
+    
     var body: some View {
         if let item = restaurant {
             GeometryReader { geometry in
-                VStack(alignment: .leading) {
-                    ZStack(alignment: .top) {
-                        image(restaurant: item, geometry)
-                        closeButton(geometry)
-                    }
+                ZStack(alignment: .center) {
                     VStack(alignment: .leading) {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                name(restaurant: item)
-                                address(restaurant: item)
+                        ZStack(alignment: .top) {
+                            image(restaurant: item, geometry)
+                            closeButton(geometry)
+                        }
+                        VStack(alignment: .leading) {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    name(restaurant: item)
+                                    address(restaurant: item)
+                                }
+                                cuisine(restaurant: item)
                             }
-                            cuisine(restaurant: item)
-                        }
-                        SeparatorView()
-                        HStack {
-                            ratingLabel
-                            StarRatingView(rating: 4).padding(.top, 4)
-                        }
-                        HStack {
-                            phone(restaurant: item)
+                            SeparatorView()
+                            HStack {
+                                ratingLabel
+                                StarRatingView(rating: 4).padding(.top, 4)
+                            }
+                            HStack {
+                                phone(restaurant: item)
+                                Spacer()
+                                diallerButton(restaurant: item)
+                            }
                             Spacer()
-                            diallerButton(restaurant: item)
+                            PrimaryButton(
+                                title: "Order",
+                                action: {
+                                    playbackMode = .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce))
+                                    viewModel.favoriteRestaurant(item)
+                                })
+                            .padding([.leading, .trailing], 16)
                         }
-                        Spacer()
-                        PrimaryButton(
-                            title: "Order",
-                            action: {
-                                viewModel.favoriteRestaurant(item)
-                                onClose()
-                            })
-                        .padding([.leading, .trailing], 16)
-                    }
-                }.ignoresSafeArea(.all, edges: .top)
+                    }.ignoresSafeArea(.all, edges: .top)
+                    LottieView(animation: .named("order"))
+                        .playbackMode(playbackMode)
+                        .animationDidFinish { completed in
+                            playbackMode = LottiePlaybackMode.paused
+                            onClose()
+                        }
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                }
             }
         }
     }
