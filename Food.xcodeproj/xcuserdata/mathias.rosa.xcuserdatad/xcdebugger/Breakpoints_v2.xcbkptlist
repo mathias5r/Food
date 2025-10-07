@@ -36,5 +36,51 @@
             landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "695095F5-BE36-46A1-8F11-82E871D733CF"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Food/Views/DetailsView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "144"
+            endingLineNumber = "144"
+            landmarkName = "diallerButton(restaurant:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "695095F5-BE36-46A1-8F11-82E871D733CF - bbedc644f053b48e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Food.DetailsView.diallerButton(restaurant: FoodDomain.RestaurantModel) -&gt; some"
+                  moduleName = "Food.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mathias.rosa/Studies/Food/Food/Views/DetailsView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "138"
+                  endingLineNumber = "138">
+               </Location>
+               <Location
+                  uuid = "695095F5-BE36-46A1-8F11-82E871D733CF - 11f8f53ab0f10543"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in Food.DetailsView.diallerButton(restaurant: FoodDomain.RestaurantModel) -&gt; some"
+                  moduleName = "Food.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mathias.rosa/Studies/Food/Food/Views/DetailsView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "138"
+                  endingLineNumber = "138">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
