@@ -16,13 +16,23 @@ extension HomeViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         let recents = viewModel.getRecents().count
         if recents > 0 {
-            self.recentsView.isHidden = false
+            self.recentsTopAnchor?.isActive = false
+            self.recentsTopAnchor = self.recentsView.topAnchor.constraint(equalTo: self.searchTextField.bottomAnchor, constant: 16)
+            self.recentsTopAnchor?.isActive = true
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            }
         }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.recentsView.isHidden = true
+            self.recentsTopAnchor?.isActive = false
+            self.recentsTopAnchor = self.recentsView.topAnchor.constraint(equalTo: self.searchTextField.bottomAnchor, constant: -500)
+            self.recentsTopAnchor?.isActive = true
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            }
         }
     }
 }

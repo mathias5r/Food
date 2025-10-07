@@ -8,6 +8,8 @@
 import Foundation
 import MapKit
 import Alamofire
+import FoodData
+import FoodDomain
 
 protocol HomeViewModelDelegate: AnyObject {
     func didSearchComplete(results: [RestaurantModel], error: Error?)

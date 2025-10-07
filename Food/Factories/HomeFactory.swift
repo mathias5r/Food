@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FoodData
 
 protocol HomeFactoryProtocol {
    static func viewController() -> UIViewController

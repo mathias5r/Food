@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 import MapKit
 import Combine
+import FoodDomain
 
 extension HomeViewController: HomeViewModelDelegate {
     func didUpdateLocation(_ location: CLLocation) {

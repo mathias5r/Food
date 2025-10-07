@@ -15,7 +15,7 @@ class HomeViewController: UIViewController  {
     var isLoading: Bool = false
     var cancellables = Set<AnyCancellable>()
     var viewModel: HomeViewModelProtocol!
-    var recentsHeightAnchor: NSLayoutConstraint?
+    var recentsTopAnchor: NSLayoutConstraint?
     
     required init(viewModel: HomeViewModelProtocol) {
         super.init(nibName: nil, bundle: nil)
@@ -53,7 +53,6 @@ class HomeViewController: UIViewController  {
         tableView.layer.cornerRadius = 16
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 48
-        tableView.isHidden = true
         return tableView
     }()
     
@@ -136,9 +135,15 @@ class HomeViewController: UIViewController  {
         recentsView.tag = 1
         recentsView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         recentsView.widthAnchor.constraint(equalToConstant: view.bounds.size.width/1.2).isActive = true;
-        recentsView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 16).isActive = true
         recentsView.separatorStyle = .none
         
+        if (recentsTopAnchor == nil) {
+            recentsTopAnchor = recentsView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: -500)
+            recentsTopAnchor?.isActive = true
+        }
+        
+        view.bringSubviewToFront(searchTextField)
+            
         view.addSubview(restaurantsView)
 
         restaurantsView.tag = 2
