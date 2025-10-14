@@ -5,9 +5,9 @@
 //  Created by Mathias da Rosa on 22/08/25.
 //
 
-import Foundation
 import FoodData
 import FoodDomain
+import Foundation
 
 protocol DetailsViewModelProtocol {
     func favoriteRestaurant(_ restaurant: RestaurantModel)
@@ -16,16 +16,16 @@ protocol DetailsViewModelProtocol {
 
 class DetailsViewModel: DetailsViewModelProtocol {
     private let favoriteRepository: FavouriteRepositoryProtocal
-    
+
     init(favoriteRepository: FavouriteRepositoryProtocal) {
         self.favoriteRepository = favoriteRepository
     }
-    
+
     func favoriteRestaurant(_ restaurant: RestaurantModel) {
-        self.favoriteRepository.create(from: restaurant)
+        favoriteRepository.create(from: restaurant)
     }
-    
+
     func getFavorites() -> [RestaurantModel] {
-        return self.favoriteRepository.get()
+        favoriteRepository.get()
     }
 }

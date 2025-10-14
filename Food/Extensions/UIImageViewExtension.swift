@@ -9,13 +9,12 @@ import UIKit
 
 extension UIImageView {
     func load(from urlString: String) {
-        
         let url = URL(string: urlString)
-        guard let url = url else {
+        guard let url else {
             print("Invalid image URL")
             return
         }
-        
+
         DispatchQueue.global().async { [weak self] in
             do {
                 let data = try Data(contentsOf: url)

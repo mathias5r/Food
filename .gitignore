@@ -1,0 +1,8 @@
+*.xccheckout
+*.xcscmblueprint
+*.xcbkptlist
+
+# Ignore all xcuserdata for all users
+*.xcuserdatad/
+
+**/xcuserdata/**/xcdebugger/*.xcbkptlist

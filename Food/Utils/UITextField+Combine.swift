@@ -5,9 +5,9 @@
 //  Created by Mathias da Rosa on 25/03/25.
 //
 
+import Combine
 import Foundation
 import UIKit
-import Combine
 
 extension UITextField {
     var textPublisher: AnyPublisher<String?, Never> {
