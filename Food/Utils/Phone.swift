@@ -10,10 +10,10 @@ import UIKit
 
 class Phone {
     static func format(_ phone: String) -> String {
-        return phone.replacingOccurrences(of: "-", with: "", options: .literal, range: nil)
+        phone.replacingOccurrences(of: "-", with: "", options: .literal, range: nil)
     }
-    
-    static func openDialler(_ phone: String) -> Void {
+
+    static func openDialler(_ phone: String) {
         guard let url = URL(string: "tel://\(Phone.format(phone))") else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }

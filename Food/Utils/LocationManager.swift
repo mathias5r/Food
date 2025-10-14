@@ -5,8 +5,8 @@
 //  Created by Mathias da Rosa on 14/04/25.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 
 protocol LocationManagerDelegate: AnyObject {
     func didUpdateLocation(_ location: CLLocation)
@@ -21,11 +21,11 @@ protocol LocationManagerProtocol: AnyObject {
 
 class LocationManager: NSObject, CLLocationManagerDelegate, LocationManagerProtocol {
     static let shared = LocationManager()
-    
+
     private let manager = CLLocationManager()
     weak var delegate: LocationManagerDelegate?
 
-    private override init() {
+    override private init() {
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
@@ -40,17 +40,20 @@ class LocationManager: NSObject, CLLocationManagerDelegate, LocationManagerProto
     }
 
     // CLLocationManagerDelegate methods
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             delegate?.didUpdateLocation(location)
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    func locationManager(
+        _: CLLocationManager,
+        didChangeAuthorization status: CLAuthorizationStatus
+    ) {
         delegate?.didChangeAuthorization(status)
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    func locationManager(_: CLLocationManager, didFailWithError error: Error) {
         print("Failed to get location: \(error)")
     }
 }

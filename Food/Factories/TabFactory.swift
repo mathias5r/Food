@@ -1,15 +1,15 @@
 //
-//  DetailsFactory.swift
+//  TabFactory.swift
 //  Food
 //
 //  Created by Mathias da Rosa on 12/06/25.
 //
 
-import UIKit
 import SwiftUI
+import UIKit
 
 protocol TabFactoryProtocol {
-   static func viewController() -> UIViewController
+    static func viewController() -> UIViewController
 }
 
 class TabFactory: TabFactoryProtocol {
@@ -19,5 +19,3 @@ class TabFactory: TabFactoryProtocol {
         return hostingController
     }
 }
-
-

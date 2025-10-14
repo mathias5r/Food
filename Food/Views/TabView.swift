@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct HomeViewControllerWrapper: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> HomeViewController {
-        return HomeFactory.viewController() as! HomeViewController
+    func makeUIViewController(context _: Context) -> HomeViewController {
+        HomeFactory.viewController() as! HomeViewController
     }
-    func updateUIViewController(_ uiViewController: HomeViewController, context: Context) {
-    }
+
+    func updateUIViewController(_: HomeViewController, context _: Context) {}
 }
 
 struct TabsView: View {
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             TabView {
                 HomeViewControllerWrapper()
                     .tabItem {
@@ -29,14 +29,11 @@ struct TabsView: View {
                     }
             }
         }
-
     }
 }
-    
+
 struct TabsView_Previews: PreviewProvider {
     static var previews: some View {
         TabsView()
     }
 }
-
-
